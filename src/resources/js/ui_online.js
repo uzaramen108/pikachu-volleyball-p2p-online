@@ -29,6 +29,7 @@ import '../style.css';
 import { MATCH_GROUP } from './quick_match/match_group.js';
 import {
   displayNicknameFor,
+  displayPeerNicknameFor,
   displayMyAndPeerNicknameShownOrHidden,
 } from './nickname_display.js';
 
@@ -731,9 +732,9 @@ export function setUpUI() {
     }
     nicknameHideBtn.blur();
     if (channel.amIPlayer2 === null) {
-      displayNicknameFor(channel.peerNickname, channel.amICreatedRoom);
+      displayPeerNicknameFor(channel.peerNickname, channel.amICreatedRoom); // Replaced function for filtering peer's nickname
     } else {
-      displayNicknameFor(channel.peerNickname, !channel.amIPlayer2);
+      displayPeerNicknameFor(channel.peerNickname, !channel.amIPlayer2); // Replaced function for filtering peer's nickname
     }
     if (channel.amICreatedRoom) {
       replaySaver.recordNicknames(channel.myNickname, channel.peerNickname);
