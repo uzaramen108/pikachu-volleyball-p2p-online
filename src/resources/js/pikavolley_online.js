@@ -4,7 +4,11 @@ import { bufferLength, myKeyboard, OnlineKeyboard } from './keyboard_online.js';
 import { SYNC_DIVISOR, channel } from './data_channel/data_channel';
 import { mod } from './utils/mod.js';
 import { askOneMoreGame } from './ui_online.js';
-import { displayPartialIPFor, displayNicknameFor } from './nickname_display.js';
+import {
+  displayPartialIPFor,
+  displayNicknameFor,
+  displayMyAndPeerNicknameShownOrHidden,
+} from './nickname_display.js';
 import { replaySaver } from './replay/replay_saver.js';
 import { PikaUserInput } from './offline_version_js/physics.js';
 import { displayMyAndPeerChatEnabledOrDisabled } from './chat_display.js';
@@ -101,6 +105,7 @@ export class PikachuVolleyballOnline extends PikachuVolleyball {
       displayPartialIPFor(channel.myPartialPublicIP, this.amIPlayer2);
       displayPartialIPFor(channel.peerPartialPublicIP, !this.amIPlayer2);
       displayMyAndPeerChatEnabledOrDisabled();
+      displayMyAndPeerNicknameShownOrHidden();
     }
   }
 
