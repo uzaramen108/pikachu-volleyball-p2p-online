@@ -11,6 +11,7 @@ import {
   sendChatEnabledMessageToPeer,
 } from './data_channel/data_channel.js';
 import { replaySaver } from './replay/replay_saver.js';
+import { filterBadWords } from './chat_filter.js';
 
 /** @typedef {import('./pikavolley_online.js').PikachuVolleyballOnline} PikachuVolleyballOnline */
 
@@ -112,8 +113,10 @@ export function displayPeerChatMessage(message) {
       displayChatMessageAt(message, 1);
     }
   } else if (channel.amIPlayer2 === false) {
+    message = filterBadWords(message); // add chat_filter code only peer's chat
     displayChatMessageAt(message, 2);
   } else if (channel.amIPlayer2 === true) {
+    message = filterBadWords(message); // add chat_filter code only peer's chat
     displayChatMessageAt(message, 1);
   }
 }
