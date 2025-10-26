@@ -193,9 +193,9 @@ function displayCustomBadWords(badWords) {
  * Display the number of bad words in the list
  */
 function displayNumberOfCustomBadWords() {
-  // (이전 코드와 동일)
   if (customBadWordsCountSpan) {
     customBadWordsCountSpan.textContent = String(customBadWordList.length);
   }
 
 }
+
