@@ -145,7 +145,7 @@ function setUpCustomFilterManagement() {
       displayCustomBadWords(customBadWordList.createArrayView());
       displayNumberOfCustomBadWords();
       // @ts-ignore
-      newCustomWordInput.value = ''; // 입력창 비우기
+      newCustomWordInput.value = ''; // Clear input
     } else {
       console.log('Custom bad word add failed (duplicate, empty, or full).');
     }
@@ -197,4 +197,5 @@ function displayNumberOfCustomBadWords() {
   if (customBadWordsCountSpan) {
     customBadWordsCountSpan.textContent = String(customBadWordList.length);
   }
+
 }
