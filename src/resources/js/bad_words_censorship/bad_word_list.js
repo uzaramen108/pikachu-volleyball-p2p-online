@@ -31,12 +31,9 @@ class CustomBadWordList {
     this.loadFromLocalStorage();
   }
 
-  /**
-   * [신규] ui.js에서 로딩 로직을 가져옵니다.
-   */
   loadFromLocalStorage() {
     if (!isLocalStorageAvailable) {
-      return; // 로컬 스토리지 사용 불가 시 중지
+      return;
     }
 
     let stringifiedList = null;
@@ -48,19 +45,15 @@ class CustomBadWordList {
 
     if (stringifiedList !== null) {
       const arrayView = JSON.parse(stringifiedList);
-      // 스키마 검증
       if (arrayView.length > 0 && arrayView[0].length !== 2) {
         window.localStorage.removeItem(STORAGE_KEY_CUSTOM_LIST);
-        // location.reload(); // 여기서 reload를 호출하면 무한 루프에 빠질 수 있으니 제거.
+        // location.reload();
       } else {
-        this.readArrayViewAndUpdate(arrayView); // 리스트 채우기
+        this.readArrayViewAndUpdate(arrayView);
       }
     }
   }
 
-  /**
-   * [신규] ui.js에서 저장 로직을 가져옵니다.
-   */
   saveToLocalStorage() {
     if (!isLocalStorageAvailable) {
       return;
@@ -148,3 +141,4 @@ class CustomBadWordList {
 }
 
 export const customBadWordList = new CustomBadWordList(50); // Limit of the number of bad words
+
