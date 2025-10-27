@@ -6,7 +6,6 @@
 import { getIfLocalStorageIsAvailable } from '../utils/is_local_storage_available';
 import { customBadWordList } from './bad_word_list.js';
 
-const STORAGE_KEY_CUSTOM_LIST = 'stringifiedCustomBadWordListArrayView';
 const STORAGE_KEY_DEFAULT_FILTER_TOGGLE = 'isDefaultBadWordFilterEnabled';
 
 const defaultFilterToggle = document.getElementById(
@@ -85,21 +84,6 @@ function setUpCustomFilterManagement() {
   // @ts-ignore
   deleteCustomWordBtn.disabled = true;
 
-  let stringifiedList = null;
-  try {
-    stringifiedList = window.localStorage.getItem(STORAGE_KEY_CUSTOM_LIST);
-  } catch (err) {
-    console.log(err);
-  }
-  if (stringifiedList !== null) {
-    const arrayView = JSON.parse(stringifiedList);
-    if (arrayView.length > 0 && arrayView[0].length !== 2) {
-      window.localStorage.removeItem(STORAGE_KEY_CUSTOM_LIST);
-      location.reload();
-    } else {
-      customBadWordList.readArrayViewAndUpdate(arrayView);
-    }
-  }
   displayCustomBadWords(customBadWordList.createArrayView());
   displayNumberOfCustomBadWords();
 
@@ -131,7 +115,6 @@ function setUpCustomFilterManagement() {
     if (!selectedTRElement) return;
     // @ts-ignore
     customBadWordList.removeAt(Number(selectedTRElement.dataset.index));
-    saveCustomListToLocalStorage();
     displayCustomBadWords(customBadWordList.createArrayView());
     displayNumberOfCustomBadWords();
   });
@@ -141,29 +124,14 @@ function setUpCustomFilterManagement() {
     
     // customBadWordList.add returns true when it succeeds
     if (customBadWordList.add(newWord)) {
-      saveCustomListToLocalStorage();
       displayCustomBadWords(customBadWordList.createArrayView());
       displayNumberOfCustomBadWords();
       // @ts-ignore
-      newCustomWordInput.value = ''; // Clear input
+      newCustomWordInput.value = '';
     } else {
       console.log('Custom bad word add failed (duplicate, empty, or full).');
     }
   });
-}
-
-/**
- * Store custom list to localstorage
- */
-function saveCustomListToLocalStorage() {
-  try {
-    window.localStorage.setItem(
-      STORAGE_KEY_CUSTOM_LIST,
-      JSON.stringify(customBadWordList.createArrayView())
-    );
-  } catch (err) {
-    console.log(err);
-  }
 }
 
 /**
@@ -193,9 +161,8 @@ function displayCustomBadWords(badWords) {
  * Display the number of bad words in the list
  */
 function displayNumberOfCustomBadWords() {
+  // (이전 코드와 동일)
   if (customBadWordsCountSpan) {
     customBadWordsCountSpan.textContent = String(customBadWordList.length);
   }
-
 }
-
