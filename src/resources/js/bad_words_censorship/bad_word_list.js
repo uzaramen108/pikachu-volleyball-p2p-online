@@ -1,3 +1,7 @@
+import { getIfLocalStorageIsAvailable } from '../utils/is_local_storage_available';
+const STORAGE_KEY_CUSTOM_LIST = 'stringifiedCustomBadWordListArrayView';
+const isLocalStorageAvailable = getIfLocalStorageIsAvailable();
+
 /**
  * Class representing a custom bad word added by the user.
  */
@@ -24,6 +28,51 @@ class CustomBadWordList {
   constructor(maxLength) {
     this._badWords = [];
     this.maxLength = maxLength;
+    this.loadFromLocalStorage();
+  }
+
+  /**
+   * [신규] ui.js에서 로딩 로직을 가져옵니다.
+   */
+  loadFromLocalStorage() {
+    if (!isLocalStorageAvailable) {
+      return; // 로컬 스토리지 사용 불가 시 중지
+    }
+
+    let stringifiedList = null;
+    try {
+      stringifiedList = window.localStorage.getItem(STORAGE_KEY_CUSTOM_LIST);
+    } catch (err) {
+      console.log(err);
+    }
+
+    if (stringifiedList !== null) {
+      const arrayView = JSON.parse(stringifiedList);
+      // 스키마 검증
+      if (arrayView.length > 0 && arrayView[0].length !== 2) {
+        window.localStorage.removeItem(STORAGE_KEY_CUSTOM_LIST);
+        // location.reload(); // 여기서 reload를 호출하면 무한 루프에 빠질 수 있으니 제거.
+      } else {
+        this.readArrayViewAndUpdate(arrayView); // 리스트 채우기
+      }
+    }
+  }
+
+  /**
+   * [신규] ui.js에서 저장 로직을 가져옵니다.
+   */
+  saveToLocalStorage() {
+    if (!isLocalStorageAvailable) {
+      return;
+    }
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY_CUSTOM_LIST,
+        JSON.stringify(this.createArrayView())
+      );
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   get length() {
@@ -53,6 +102,7 @@ class CustomBadWordList {
       return false; // Duplicate Check, if already exists, do nothing.
     }
     this._badWords.push(new CustomBadWord(cleanWord, Date.now()));
+    this.saveToLocalStorage();
     return true;
   }
 
@@ -62,6 +112,7 @@ class CustomBadWordList {
    */
   removeAt(index) {
     this._badWords.splice(index, 1);
+    this.saveToLocalStorage();
   }
 
   /**
