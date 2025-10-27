@@ -959,13 +959,14 @@ table.blocked-bad-words-table input {
   color: inherit;
   padding: 10px;
   box-sizing: border-box;
+  text-align: center;
 }
 #add-custom-word-btn {
   width: 100%;
   border: none;
   font-size: inherit;
   background-color: transparent;
-  color: inherit;
+  color: transparent;
   padding: 0px;
   box-sizing: border-box;
   cursor: pointer;
@@ -1063,4 +1064,4 @@ input.toggle-switch:checked + label::before {
 }
 
 
-/*# sourceMappingURL=415.6ec70cdce985ac74dd09.css.map*/
+/*# sourceMappingURL=415.ad7be6fd9c9ab7d0cabb.css.map*/
