@@ -957,7 +957,7 @@ table.blocked-bad-words-table input {
   font-size: var(--font-size);
   background-color: transparent;
   color: inherit;
-  padding: 0px;
+  padding: 10px;
   box-sizing: border-box;
   text-align: center;
 }
@@ -970,7 +970,7 @@ table.blocked-bad-words-table input {
   font-size: inherit;
   background-color: transparent;
   color: inherit;
-  padding: 0px;
+  padding: 10px;
   box-sizing: border-box;
   cursor: pointer;
   text-align: center;
@@ -1067,4 +1067,4 @@ input.toggle-switch:checked + label::before {
 }
 
 
-/*# sourceMappingURL=415.5c03969363fdddbda38a.css.map*/
+/*# sourceMappingURL=415.7180e9f1204b6c008ec4.css.map*/
