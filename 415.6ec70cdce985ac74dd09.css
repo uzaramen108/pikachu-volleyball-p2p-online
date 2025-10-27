@@ -955,6 +955,21 @@ table.blocked-bad-words-table input {
   height: 100%;
   border: none;
   font-size: var(--font-size);
+  background-color: transparent;
+  color: inherit;
+  padding: 10px;
+  box-sizing: border-box;
+}
+#add-custom-word-btn {
+  width: 100%;
+  border: none;
+  font-size: inherit;
+  background-color: transparent;
+  color: inherit;
+  padding: 0px;
+  box-sizing: border-box;
+  cursor: pointer;
+  text-align: center;
 }
 table.blocked-bad-words-table .delete-btn {
   height: 100%;
@@ -1048,4 +1063,4 @@ input.toggle-switch:checked + label::before {
 }
 
 
-/*# sourceMappingURL=415.5803bea417ee98854f0c.css.map*/
+/*# sourceMappingURL=415.6ec70cdce985ac74dd09.css.map*/
