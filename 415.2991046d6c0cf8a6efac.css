@@ -966,7 +966,7 @@ table.blocked-bad-words-table input {
   border: none;
   font-size: inherit;
   background-color: transparent;
-  color: transparent;
+  color: inherit;
   padding: 0px;
   box-sizing: border-box;
   cursor: pointer;
@@ -1064,4 +1064,4 @@ input.toggle-switch:checked + label::before {
 }
 
 
-/*# sourceMappingURL=415.ad7be6fd9c9ab7d0cabb.css.map*/
+/*# sourceMappingURL=415.2991046d6c0cf8a6efac.css.map*/
