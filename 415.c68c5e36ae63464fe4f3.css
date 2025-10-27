@@ -962,6 +962,9 @@ table.blocked-bad-words-table input {
   text-align: center;
 }
 #add-custom-word-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   width: 100%;
   border: none;
   font-size: inherit;
@@ -1064,4 +1067,4 @@ input.toggle-switch:checked + label::before {
 }
 
 
-/*# sourceMappingURL=415.2991046d6c0cf8a6efac.css.map*/
+/*# sourceMappingURL=415.c68c5e36ae63464fe4f3.css.map*/
