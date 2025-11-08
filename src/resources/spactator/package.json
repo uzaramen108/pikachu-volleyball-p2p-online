@@ -1,0 +1,10 @@
+{
+  "name": "pikavolley-relay",
+  "version": "1.0.0",
+  "description": "Spectator Relay Server for Pikachu Volleyball",
+  "main": "server.js",
+  "type": "module",
+  "dependencies": {
+    "ws": "^8.14.2"
+  }
+}

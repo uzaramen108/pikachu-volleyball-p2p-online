@@ -1,0 +1,22 @@
+{
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "cSpell.words": [
+    "Btns",
+    "firestore",
+    "Pikachu",
+    "Pikachus",
+    "pikavolley",
+    "pipikachu",
+    "pixi",
+    "preselection",
+    "SACHI",
+    "sachisoft",
+    "Satoshi",
+    "SAWAYAKAN",
+    "seedrandom",
+    "spritesheet",
+    "Takenouchi"
+  ],
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
