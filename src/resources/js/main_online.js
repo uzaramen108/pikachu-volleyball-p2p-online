@@ -39,6 +39,8 @@
  *                                          the file name to "quick_match_server_url.js"
  */
 "use strict";
+
+// 1. PIXI 및 공통 모듈 (기존과 동일)
 import { settings } from "@pixi/settings";
 import { SCALE_MODES } from "@pixi/constants";
 import { Renderer, BatchRenderer, autoDetectRenderer } from "@pixi/core";
@@ -51,25 +53,35 @@ import { CanvasRenderer } from "@pixi/canvas-renderer";
 import { CanvasSpriteRenderer } from "@pixi/canvas-sprite";
 import { CanvasPrepare } from "@pixi/canvas-prepare";
 import "@pixi/canvas-display";
-import { PikachuVolleyballOnline } from "./pikavolley_online.js";
 import { ASSETS_PATH } from "./offline_version_js/assets_path.js";
+import "../style.css";
+
+// 2. 플레이어용 모듈
+import { PikachuVolleyballOnline } from "./pikavolley_online.js";
 import { channel } from "./data_channel/data_channel.js";
-import { setUpUI, setUpUIAfterLoadingGameAssets } from "./ui_online.js";
+import {
+  setUpUI,
+  setUpUIAfterLoadingGameAssets,
+  // [수정] 1단계에서 export한 함수를 import하네
+  setUpToShowDropdownsAndSubmenus,
+} from "./ui_online.js";
 import { setUpUIForBlockingOtherUsers } from "./block_other_players/ui.js";
 import { setUpUIForManagingBadWords } from "./bad_words_censorship/ui.js";
 import { setGetSpeechBubbleNeeded } from "./chat_display.js";
-import "../style.css";
 
-// To show two "with friend" on the menu
+// 3. [신규] 관전자용 모듈
+import { PikachuVolleyballSpectator } from "./pikavolley_spectator.js";
+import { PikaUserInputWithSync } from "./keyboard_online.js";
+import { convert5bitNumberToUserInput } from "./utils/input_conversion.js";
+import { mod } from "./utils/mod.js";
+import { SYNC_DIVISOR } from "./data_channel/data_channel.js";
+
+// 4. PIXI 설정 (기존과 동일)
 const TEXTURES = ASSETS_PATH.TEXTURES;
 TEXTURES.WITH_COMPUTER = TEXTURES.WITH_FRIEND;
 
-// Reference for how to use Renderer.registerPlugin:
-// https://github.com/pixijs/pixijs/blob/af3c0c6bb15aeb1049178c972e4a14bb4cabfce4/bundles/pixi.js/src/index.ts#L27-L34
 Renderer.registerPlugin("prepare", Prepare);
 Renderer.registerPlugin("batch", BatchRenderer);
-// Reference for how to use CanvasRenderer.registerPlugin:
-// https://github.com/pixijs/pixijs/blob/af3c0c6bb15aeb1049178c972e4a14bb4cabfce4/bundles/pixi.js-legacy/src/index.ts#L13-L19
 CanvasRenderer.registerPlugin("prepare", CanvasPrepare);
 CanvasRenderer.registerPlugin("sprite", CanvasSpriteRenderer);
 Loader.registerPlugin(SpritesheetLoader);
@@ -81,14 +93,7 @@ settings.ROUND_PIXELS = true;
 const renderer = autoDetectRenderer({
   width: 432,
   height: 304,
-  antialias: false,
-  backgroundColor: 0x000000,
-  backgroundAlpha: 1,
-  // Decided to use only Canvas for compatibility reason. One player had reported that
-  // on their browser, where pixi chooses to use WebGL renderer, the graphics are not fine.
-  // And the issue had been fixed by using Canvas renderer. And also for the sake of testing,
-  // it is more comfortable just to stick with Canvas renderer so that it is unnecessary to switch
-  // between WebGL renderer and Canvas renderer.
+  // ... (나머지 렌더러 설정은 자네의 원본과 동일) ...
   forceCanvas: true,
 });
 
@@ -97,28 +102,44 @@ const ticker = new Ticker();
 const loader = new Loader();
 
 document.querySelector("#game-canvas-container").appendChild(renderer.view);
-renderer.render(stage); // To make the initial canvas painting stable in the Firefox browser.
+renderer.render(stage);
 
+// 5. 에셋 로드 (기존과 동일)
 loader.add(ASSETS_PATH.SPRITE_SHEET);
 for (const prop in ASSETS_PATH.SOUNDS) {
   loader.add(ASSETS_PATH.SOUNDS[prop]);
 }
-setUpLoaderProgressBar();
-channel.callbackAfterDataChannelOpened = () => {
-  loader.load(setup);
-};
+setUpLoaderProgressBar(); // 로딩 바 설정은 공통
 
-setUpUI();
-setUpUIForBlockingOtherUsers();
-setUpUIForManagingBadWords();
+// 6. [핵심] 모드 분기 (플레이어 vs 관전자)
+const urlParams = new URLSearchParams(window.location.search);
+const spectateRoomId = urlParams.get("spectate");
 
-/**
- * Set up the loader progress bar.
- */
+const RELAY_SERVER_URL = "wss://pikavolley-relay-server.onrender.com";
+let player1InputQueue = []; // 관전자용
+let player2InputQueue = []; // 관전자용
+
+if (spectateRoomId) {
+  // ----- [A] 관전자 모드로 부팅 -----
+  console.log("관전 모드로 시작합니다. Room ID:", spectateRoomId);
+  document.getElementById("before-connection").style.display = "none";
+  loader.load(() => setupSpectator(spectateRoomId));
+} else {
+  // ----- [B] 기존 플레이어 모드로 부팅 -----
+  console.log("플레이어 모드로 시작합니다.");
+  channel.callbackAfterDataChannelOpened = () => {
+    loader.load(setupPlayer);
+  };
+  setUpUI();
+  setUpUIForBlockingOtherUsers();
+  setUpUIForManagingBadWords();
+}
+
+// 7. 로딩 바 설정 (기존 함수)
 function setUpLoaderProgressBar() {
+  // ... (자네가 준 코드와 동일) ...
   const loadingBox = document.getElementById("loading-box");
   const progressBar = document.getElementById("progress-bar");
-
   loader.onProgress.add(() => {
     progressBar.style.width = `${loader.progress}%`;
   });
@@ -127,26 +148,182 @@ function setUpLoaderProgressBar() {
   });
 }
 
-function setup() {
+// 8. [수정] 플레이어용 셋업 (기존 setup 함수)
+function setupPlayer() {
   const pikaVolley = new PikachuVolleyballOnline(stage, loader.resources);
   setUpUIAfterLoadingGameAssets(pikaVolley, ticker);
   setGetSpeechBubbleNeeded(pikaVolley);
-  start(pikaVolley);
+  startPlayer(pikaVolley);
 }
 
-function start(pikaVolley) {
+// 9. [수정] 플레이어용 Ticker 시작 (기존 start 함수)
+function startPlayer(pikaVolley) {
   ticker.maxFPS = pikaVolley.normalFPS;
   ticker.add(() => {
-    // Rendering and gameLoop order is the opposite of
-    // the offline web version (refer: ./offline_version_js/main.js).
-    // It's for the smooth rendering for the online version
-    // which gameLoop can not always succeed right on this "ticker.add"ed code
-    // because of the transfer delay or connection status. (If gameLoop here fails,
-    // it is recovered by the callback gameLoop which is called after peer input received.)
-    // Now the rendering is delayed 40ms (when pikaVolley.normalFPS == 25)
-    // behind gameLoop.
     renderer.render(stage);
-    pikaVolley.gameLoop();
+    pikaVolley.gameLoop(); // 플레이어용 게임 루프
   });
   ticker.start();
+}
+
+// 10. [신규] 관전자용 셋업
+function setupSpectator(roomId) {
+  // 1. 관전자용 게임 클래스 생성
+  console.log("started setup spectator");
+  const game = new PikachuVolleyballSpectator(
+    stage,
+    loader.resources,
+    player1InputQueue,
+    player2InputQueue
+  );
+
+  // 2. 관전자용 UI *수동* 설정
+  document.getElementById("flex-container").classList.remove("hidden");
+
+  // 2-A. '나가기' 버튼 수동 설정
+  const exitBtn = document.getElementById("exit-btn");
+  if (exitBtn) {
+    exitBtn.addEventListener("click", () => {
+      window.location.href = "./index.html"; // 메인으로
+    });
+  }
+
+  // 2-B. [수정] '설정' 메뉴 버튼 활성화
+  // 1단계에서 export한 함수를 호출하네.
+  try {
+    setUpToShowDropdownsAndSubmenus();
+  } catch (e) {
+    console.error("'setUpToShowDropdownsAndSubmenus' 호출 중 오류:", e);
+  }
+
+  // 3. 플레이어용 UI 강제 숨김
+  document.getElementById("loading-box").classList.add("hidden");
+  document.getElementById("peer-loading-box").classList.add("hidden");
+  document.getElementById("ping-box").classList.add("hidden");
+  document.getElementById("save-replay-btn").style.display = "none";
+  document.getElementById("block-this-peer-btn").style.display = "none";
+  document.getElementById("chat-input-here").style.display = "none";
+
+  // 4. 관전자용 상태창 보이기
+  const statusBox = document.getElementById("spectator-status-box");
+  if (statusBox) {
+    statusBox.style.display = "block";
+    statusBox.classList.remove("hidden");
+  }
+
+  // 5. 릴레이 서버 접속
+  console.log("started contacting relay server");
+  connectToRelay(roomId);
+
+  // 6. 관전자용 Ticker 시작
+  startSpectator(game);
+}
+
+// 11. [신규] 관전자용 Ticker 시작
+function startSpectator(pikaVolley) {
+  console.log("started ticker for spectator");
+  ticker.maxFPS = pikaVolley.normalFPS;
+  ticker.add(() => {
+    renderer.render(stage);
+    pikaVolley.spectatorGameLoop();
+  });
+  ticker.start();
+}
+// 12. [신규] 릴레이 서버 접속 로직 (기존과 동일)
+function connectToRelay(roomId) {
+  // ... (이전과 동일한 릴레이 접속 코드) ...
+  const wsUrl = `${RELAY_SERVER_URL}/${roomId}`;
+  const socket = new WebSocket(wsUrl);
+  socket.binaryType = "arraybuffer";
+  const statusElement = document.getElementById("spectator-status-text");
+  
+  console.log(wsUrl);
+  console.log(socket);
+
+  socket.onopen = () => {
+    console.log(`[${roomId}] Spectator connection open. Requesting watch...`);
+    if (statusElement)
+      statusElement.textContent =
+        "방에 접속했습니다. 게임 데이터를 기다립니다...";
+    socket.send(JSON.stringify({ type: "watch" }));
+  };
+
+  socket.onmessage = (event) => {
+    const statusBox = document.getElementById("spectator-status-box");
+    if (statusBox) statusBox.classList.add("hidden");
+
+    const data = event.data;
+
+    // [라우터 1] 메시지가 문자열(string)인가? (JSON 내역)
+    if (typeof data === "string") {
+      try {
+        const msg = JSON.parse(data);
+        if (msg.type === "history") {
+          console.log(`[Spectator] Game history (list) received. ${msg.history.length} buffers.`);
+          // '리스트'에 담긴 모든 ArrayBuffer를 한 번에 처리하네
+          msg.history.forEach(processMessageData); 
+        }
+      } catch (e) {
+        console.error("Failed to parse history JSON:", e);
+      }
+    } 
+    // [라우터 2] 메시지가 ArrayBuffer인가? (생방송)
+    else if (data instanceof ArrayBuffer) {
+      processMessageData(data); // 생방송 데이터 1개 처리
+    }
+  };
+
+  socket.onclose = () => {
+    console.log("Relay connection closed.");
+    if (statusElement)
+      statusElement.textContent = "관전이 종료되었습니다. (연결 끊김)";
+    const statusBox = document.getElementById("spectator-status-box");
+    if (statusBox) statusBox.classList.remove("hidden");
+  };
+
+  socket.onerror = (err) => {
+    console.error("Relay socket error:", err);
+    if (statusElement)
+      statusElement.textContent = "오류가 발생했습니다. (연결 실패)";
+    const statusBox = document.getElementById("spectator-status-box");
+    if (statusBox) statusBox.classList.remove("hidden");
+  };
+}
+
+/**
+ * [신규] 'processMessageData'
+ * '내역'이든 '생방송'이든, 모든 ArrayBuffer를 처리하는 공통 함수
+ * (기존 onmessage의 로직을 이 함수로 분리했네)
+ * @param {ArrayBuffer} data (playerID 1바이트 + input 데이터)
+ */
+function processMessageData(data) {
+  const view = new DataView(data);
+  const playerID = view.getUint8(0);
+  const inputData = data.slice(1); // 1바이트 ID 제거
+  const targetQueue = (playerID === 0) ? player1InputQueue : player2InputQueue;
+  
+  // [수정] 큐를 채우는 'processInputData' 함수를 호출하네
+  processInputDataToQueue(inputData, targetQueue);
+}
+
+
+// 13. [신규] 큐 처리 로직
+// [수정] 함수 이름을 'processInputDataToQueue'로 변경 (혼동 방지)
+function processInputDataToQueue(inputData, targetQueue) {
+  // ... (자네가 03:59에 줬던 'processInputData' 함수 내용과 100% 동일) ...
+  const dataView = new DataView(inputData);
+  const syncCounter0 = dataView.getUint16(0, true);
+
+  for (let i = 0; i < inputData.byteLength - 2; i++) {
+    const syncCounter = mod(syncCounter0 + i, SYNC_DIVISOR);
+    const byte = dataView.getUint8(2 + i);
+    const input = convert5bitNumberToUserInput(byte);
+    const inputWithSync = new PikaUserInputWithSync(
+      syncCounter,
+      input.xDirection,
+      input.yDirection,
+      input.powerHit
+    );
+    targetQueue.push(inputWithSync);
+  }
 }

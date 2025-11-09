@@ -75,7 +75,8 @@ import { replaySaver } from "../replay/replay_saver.js";
 /** @typedef {{speed: string, winningScore: number}} Options */
 
 const firebaseApp = initializeApp(firebaseConfig);
-
+const RELAY_SERVER_URL = "wss://pikavolley-relay-server.onrender.com"; 
+let spectatorSocket = null;
 // It is set to (1 << 16) since syncCounter is to be sent as Uint16
 // 1 << 16 === 65536 and it corresponds to about 36 minutes of syncCounter
 // wrap-around time in 30 FPS (fast game speed).
@@ -279,7 +280,7 @@ export async function joinRoom(roomIdToJoin) {
     console.log("No room is mathing the ID");
     if (channel.isQuickMatch) {
       printNoRoomMatchingMessageInQuickMatch();
-      printConnectionFailed();
+      printConnectionFailed(roomId);
     } else {
       printNoRoomMatchingMessage();
     }
@@ -288,7 +289,7 @@ export async function joinRoom(roomIdToJoin) {
   const data = roomSnapshot.data();
   if (data.answer) {
     console.log("The room is already joined by someone else");
-    printSomeoneElseAlreadyJoinedRoomMessage();
+    printSomeoneElseAlreadyJoinedRoomMessage(roomId);
     return false;
   }
 
@@ -348,12 +349,12 @@ export function cleanUpFirestoreRelevants() {
   }
 
   // Delete the room document
-  if (channel.amICreatedRoom && roomRef) {
-    deleteDoc(roomRef).then(() => {
-      console.log("deleted the room");
-    });
-    roomRef = null;
-  }
+  // if (channel.amICreatedRoom && roomRef) {
+  //   deleteDoc(roomRef).then(() => {
+  //     console.log("deleted the room");
+  //   });
+  //   roomRef = null;
+  // }
 }
 
 export function closeConnection() {
@@ -364,6 +365,49 @@ export function closeConnection() {
     peerConnection.close();
   }
   console.log("Did close data channel and peer connection");
+  
+  if (channel.amICreatedRoom && roomRef) {
+    deleteDoc(roomRef).then(() => {
+      console.log("deleted the room");
+    });
+    roomRef = null;
+  }
+}
+
+/**
+ * [신규] 플레이어가 릴레이 서버에 '방송'을 시작하기 위해 호출
+ */
+export function connectToRelayForBroadcasting() {
+  if (spectatorSocket) {
+    return; // 이미 연결됨
+  }
+  
+  console.log("[Broadcasting] Connecting to relay server...");
+  try {
+    const wsUrl = `${RELAY_SERVER_URL}/${roomId}`; // roomId는 이미 이 파일의 전역 변수일세
+    spectatorSocket = new WebSocket(wsUrl);
+
+    spectatorSocket.onopen = () => {
+      console.log("[Broadcasting] Spectator relay connected.");
+      // [중요] 내가 '방장'인지 'P2'인지 서버에 알리네
+      const playerID = channel.amICreatedRoom ? 0 : 1; 
+      spectatorSocket.send(JSON.stringify({ 
+        type: "identify_player", 
+        player: playerID 
+      }));
+    };
+    spectatorSocket.onerror = (err) => {
+      console.error("[Broadcasting] Spectator socket error:", err);
+      spectatorSocket = null;
+    };
+    spectatorSocket.onclose = () => {
+      console.log("[Broadcasting] Spectator socket closed.");
+      spectatorSocket = null;
+    }
+  } catch (err) {
+    console.error("[Broadcasting] Failed to connect to spectator relay:", err);
+    spectatorSocket = null;
+  }
 }
 
 /**
@@ -384,6 +428,20 @@ export function sendInputQueueToPeer(inputQueue) {
     dataView.setUint8(2 + i, byte);
   }
   dataChannel.send(buffer);
+
+  // [관전 기능 추가]
+  // (부가 작업) 릴레이 서버에 "관전자용" 데이터 전송
+  if (spectatorSocket && spectatorSocket.readyState === WebSocket.OPEN) {
+    // 원본 buffer 앞에 1바이트 ID(0 또는 1)를 추가해서 전송
+    const spectatorBuffer = new ArrayBuffer(buffer.byteLength + 1);
+    
+    const playerID = channel.amICreatedRoom ? 0 : 1; 
+    new DataView(spectatorBuffer).setUint8(0, playerID);
+    
+    new Uint8Array(spectatorBuffer, 1).set(new Uint8Array(buffer));
+
+    spectatorSocket.send(spectatorBuffer);
+  }
 }
 
 /**
@@ -903,6 +961,30 @@ function dataChannelOpened() {
   notifyBySound();
   cleanUpFirestoreRelevants();
 
+  /**
+  try {
+    // [수정] RELAY_SERVER_URL 변수 사용
+    const wsUrl = `${RELAY_SERVER_URL}/${roomId}`;
+    spectatorSocket = new WebSocket(wsUrl);
+
+    spectatorSocket.onopen = () => {
+      console.log("Spectator relay connected.");
+      // [중요] P1(방장)인지 P2인지 서버에 알려줘야 함
+      const playerID = channel.amICreatedRoom ? 0 : 1; 
+      spectatorSocket.send(JSON.stringify({ 
+        type: "identify_player", 
+        player: playerID 
+      }));
+    };
+    spectatorSocket.onerror = (err) => {
+      console.error("Spectator socket error:", err);
+      spectatorSocket = null;
+    };
+  } catch (err) {
+    console.error("Failed to connect to spectator relay:", err);
+  }d
+  */
+
   if (channel.isQuickMatch) {
     disableCancelQuickMatchBtn();
   }
@@ -926,6 +1008,8 @@ function dataChannelOpened() {
   const rngForPlayer1Chat = seedrandom.alea(roomId.slice(10, 15));
   const rngForPlayer2Chat = seedrandom.alea(roomId.slice(15));
   setChatRngs(rngForPlayer1Chat, rngForPlayer2Chat);
+
+  connectToRelayForBroadcasting(); // start broadcasting
 
   startGameAfterPingTest();
 }
@@ -964,7 +1048,7 @@ function registerPeerConnectionListeners(peerConnection) {
       isDataChannelEverOpened === false
     ) {
       notifyBySound();
-      printConnectionFailed();
+      printConnectionFailed(roomId);
     }
   });
 

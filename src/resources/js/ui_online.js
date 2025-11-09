@@ -1150,8 +1150,21 @@ export function printNotValidRoomIdMessage() {
   printLog(document.getElementById("not-valid-room-id-message").textContent);
 }
 
-export function printNoRoomMatchingMessage() {
-  printLog(document.getElementById("no-room-matching-message").textContent);
+export function printNoRoomMatchingMessage(roomId) {
+  //printLog(document.getElementById("no-room-matching-message").textContent);
+  
+  // [수정] 로그 메시지를 '연결 로그' 창에 띄우네
+  printLog("방이 꽉 찼습니다. 관전 모드로 자동 전환합니다...");
+  
+  // [수정] 1단계에서 만든 'spectate-link-container'에도 메시지를 띄워주지
+  const container = document.getElementById("spectate-link-container");
+  if (container) {
+    container.innerHTML = `<p style="margin: 0;">방이 꽉 찼습니다.<br>관전 모드로 자동 전환합니다...</p>`;
+    container.classList.remove("hidden");
+  }
+
+  // '자동 전환' 실행
+  showSpectateLink(roomId); 
 }
 
 export function printNoRoomMatchingMessageInQuickMatch() {
@@ -1161,14 +1174,36 @@ export function printNoRoomMatchingMessageInQuickMatch() {
   );
 }
 
-export function printSomeoneElseAlreadyJoinedRoomMessage() {
-  printLog(
-    document.getElementById("someone-else-already-joined-the-room").textContent
-  );
+export function printSomeoneElseAlreadyJoinedRoomMessage(roomId) {
+  // [수정] 로그 메시지를 '연결 로그' 창에 띄우네
+  printLog("방이 꽉 찼습니다. 관전 모드로 자동 전환합니다...");
+  
+  // [수정] 1단계에서 만든 'spectate-link-container'에도 메시지를 띄워주지
+  const container = document.getElementById("spectate-link-container");
+  if (container) {
+    container.innerHTML = `<p style="margin: 0;">방이 꽉 찼습니다.<br>관전 모드로 자동 전환합니다...</p>`;
+    container.classList.remove("hidden");
+  }
+
+  // '자동 전환' 실행
+  showSpectateLink(roomId); 
 }
 
-export function printConnectionFailed() {
-  printLog(document.getElementById("connection-failed").textContent);
+export function printConnectionFailed(roomId) {
+  // [수정] 로그 메시지를 '연결 로그' 창에 띄우네
+  printLog("P2P 연결에 실패했습니다. 관전 모드로 자동 전환합니다...");
+
+  // [수정] 1단계에서 만든 'spectate-link-container'에도 메시지를 띄워주지
+  const container = document.getElementById("spectate-link-container");
+  if (container) {
+    container.innerHTML = `<p style="margin: 0;">P2P 연결에 실패했습니다.<br>관전 모드로 자동 전환합니다...</p>`;
+    container.classList.remove("hidden");
+  }
+  
+  // '자동 전환' 실행 (roomId가 있을 때만)
+  if (roomId) {
+    showSpectateLink(roomId);
+  }
 }
 
 export function showGameCanvas() {
@@ -1624,7 +1659,7 @@ function setUpOptionsBtn() {
 /**
  * Attach event listeners to show dropdowns and submenus properly
  */
-function setUpToShowDropdownsAndSubmenus() {
+export function setUpToShowDropdownsAndSubmenus() {
   // hide dropdowns and submenus if the user clicks outside of these
   window.addEventListener("click", (event) => {
     // @ts-ignore
@@ -1896,4 +1931,22 @@ function hideSubmenus() {
   for (let i = 0; i < submenuBtns.length; i++) {
     submenuBtns[i].classList.remove("open");
   }
+}
+
+/**
+ * [수정] 관전 링크로 '자동 새로고침(redirect)'을 실행
+ * @param {string} roomId
+ */
+function showSpectateLink(roomId) {
+  if (!roomId) {
+    return;
+  }
+
+  // URL을 생성 (ko/index.html?spectate=...)
+  const spectateUrl = `./index.html?spectate=${roomId}`;
+  
+  // 1.5초 뒤에 리다이렉트 (로그를 읽을 시간을 줌)
+  setTimeout(() => {
+    window.location.href = spectateUrl;
+  }, 1500); // (1초에서 1.5초로 조금 늘렸네)
 }
