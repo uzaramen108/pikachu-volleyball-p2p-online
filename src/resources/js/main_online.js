@@ -38,27 +38,27 @@
  *  - "quick_match_server_url.template.js": Fill this template the url of the quick match server and change
  *                                          the file name to "quick_match_server_url.js"
  */
-'use strict';
-import { settings } from '@pixi/settings';
-import { SCALE_MODES } from '@pixi/constants';
-import { Renderer, BatchRenderer, autoDetectRenderer } from '@pixi/core';
-import { Prepare } from '@pixi/prepare';
-import { Container } from '@pixi/display';
-import { Loader } from '@pixi/loaders';
-import { SpritesheetLoader } from '@pixi/spritesheet';
-import { Ticker } from '@pixi/ticker';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
-import { CanvasPrepare } from '@pixi/canvas-prepare';
-import '@pixi/canvas-display';
-import { PikachuVolleyballOnline } from './pikavolley_online.js';
-import { ASSETS_PATH } from './offline_version_js/assets_path.js';
-import { channel } from './data_channel/data_channel.js';
-import { setUpUI, setUpUIAfterLoadingGameAssets } from './ui_online.js';
-import { setUpUIForBlockingOtherUsers } from './block_other_players/ui.js';
-import { setUpUIForManagingBadWords } from './bad_words_censorship/ui.js';
-import { setGetSpeechBubbleNeeded } from './chat_display.js';
-import '../style.css';
+"use strict";
+import { settings } from "@pixi/settings";
+import { SCALE_MODES } from "@pixi/constants";
+import { Renderer, BatchRenderer, autoDetectRenderer } from "@pixi/core";
+import { Prepare } from "@pixi/prepare";
+import { Container } from "@pixi/display";
+import { Loader } from "@pixi/loaders";
+import { SpritesheetLoader } from "@pixi/spritesheet";
+import { Ticker } from "@pixi/ticker";
+import { CanvasRenderer } from "@pixi/canvas-renderer";
+import { CanvasSpriteRenderer } from "@pixi/canvas-sprite";
+import { CanvasPrepare } from "@pixi/canvas-prepare";
+import "@pixi/canvas-display";
+import { PikachuVolleyballOnline } from "./pikavolley_online.js";
+import { ASSETS_PATH } from "./offline_version_js/assets_path.js";
+import { channel } from "./data_channel/data_channel.js";
+import { setUpUI, setUpUIAfterLoadingGameAssets } from "./ui_online.js";
+import { setUpUIForBlockingOtherUsers } from "./block_other_players/ui.js";
+import { setUpUIForManagingBadWords } from "./bad_words_censorship/ui.js";
+import { setGetSpeechBubbleNeeded } from "./chat_display.js";
+import "../style.css";
 
 // To show two "with friend" on the menu
 const TEXTURES = ASSETS_PATH.TEXTURES;
@@ -66,12 +66,12 @@ TEXTURES.WITH_COMPUTER = TEXTURES.WITH_FRIEND;
 
 // Reference for how to use Renderer.registerPlugin:
 // https://github.com/pixijs/pixijs/blob/af3c0c6bb15aeb1049178c972e4a14bb4cabfce4/bundles/pixi.js/src/index.ts#L27-L34
-Renderer.registerPlugin('prepare', Prepare);
-Renderer.registerPlugin('batch', BatchRenderer);
+Renderer.registerPlugin("prepare", Prepare);
+Renderer.registerPlugin("batch", BatchRenderer);
 // Reference for how to use CanvasRenderer.registerPlugin:
 // https://github.com/pixijs/pixijs/blob/af3c0c6bb15aeb1049178c972e4a14bb4cabfce4/bundles/pixi.js-legacy/src/index.ts#L13-L19
-CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
-CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
+CanvasRenderer.registerPlugin("prepare", CanvasPrepare);
+CanvasRenderer.registerPlugin("sprite", CanvasSpriteRenderer);
 Loader.registerPlugin(SpritesheetLoader);
 
 settings.RESOLUTION = 2;
@@ -96,7 +96,7 @@ const stage = new Container();
 const ticker = new Ticker();
 const loader = new Loader();
 
-document.querySelector('#game-canvas-container').appendChild(renderer.view);
+document.querySelector("#game-canvas-container").appendChild(renderer.view);
 renderer.render(stage); // To make the initial canvas painting stable in the Firefox browser.
 
 loader.add(ASSETS_PATH.SPRITE_SHEET);
@@ -116,14 +116,14 @@ setUpUIForManagingBadWords();
  * Set up the loader progress bar.
  */
 function setUpLoaderProgressBar() {
-  const loadingBox = document.getElementById('loading-box');
-  const progressBar = document.getElementById('progress-bar');
+  const loadingBox = document.getElementById("loading-box");
+  const progressBar = document.getElementById("progress-bar");
 
   loader.onProgress.add(() => {
     progressBar.style.width = `${loader.progress}%`;
   });
   loader.onComplete.add(() => {
-    loadingBox.classList.add('hidden');
+    loadingBox.classList.add("hidden");
   });
 }
 

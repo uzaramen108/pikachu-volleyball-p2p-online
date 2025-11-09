@@ -1,5 +1,5 @@
-import { getIfLocalStorageIsAvailable } from '../utils/is_local_storage_available';
-const STORAGE_KEY_CUSTOM_LIST = 'stringifiedCustomBadWordListArrayView';
+import { getIfLocalStorageIsAvailable } from "../utils/is_local_storage_available";
+const STORAGE_KEY_CUSTOM_LIST = "stringifiedCustomBadWordListArrayView";
 const isLocalStorageAvailable = getIfLocalStorageIsAvailable();
 
 /**
@@ -20,12 +20,59 @@ class CustomBadWord {
 /**
  * Class representing a list of custom bad words
  */
-class CustomBadWordList {
+class BadWordList {
   /**
-   * Create a CustomBadWordList object
+   * Create a BadWordList object
    * @param {number} maxLength
    */
   constructor(maxLength) {
+    const STORAGE_KEY_DEFAULT_FILTER_TOGGLE = "isDefaultBadWordFilterEnabled";
+    const storedToggleState = window.localStorage.getItem(
+      STORAGE_KEY_DEFAULT_FILTER_TOGGLE
+    );
+    if (storedToggleState === "false") {
+      // Use list of basic bad words?
+      this.basic_badWords = [];
+    } else {
+      this.basic_badWords = [
+        "fuck",
+        "fuckyou",
+        "shit",
+        "bitch",
+        "asshole",
+        "nigger",
+        "faggot",
+        "개새",
+        "느금",
+        "ㄴㄱㅁ",
+        "ㄴ금마",
+        "니애미",
+        "ㄴㅇㅁ",
+        "느그",
+        "병신",
+        "병ㅅ",
+        "ㅂㅅ",
+        "ㅂ신",
+        "ㅅㅂ",
+        "새끼",
+        "ㅅㄲ",
+        "시발",
+        "씨발",
+        "ㅅ발",
+        "애미",
+        "애비",
+        "어머니",
+        "엄마",
+        "아버지",
+        "좆",
+        "ㅈ까",
+        "ㅈ밥",
+        "ㅈㅂ",
+        "ㅈ이",
+        "ㅄ",
+        "씹",
+      ];
+    }
     this._badWords = [];
     this.maxLength = maxLength;
     this.loadFromLocalStorage();
@@ -86,11 +133,11 @@ class CustomBadWordList {
    * @returns {boolean} Returns true if added successfully, false otherwise.
    */
   add(word) {
-    const cleanWord = word.toLowerCase().trim();
+    const cleanWord = word.toLowerCase().replace(/[^\p{L}\p{Emoji}]/gu, ''); // Words or emojis will be saved
     if (!cleanWord || this.isFull()) {
       return false;
     }
-    
+
     if (this._badWords.some((bw) => bw.word === cleanWord)) {
       return false; // Duplicate Check, if already exists, do nothing.
     }
@@ -109,14 +156,11 @@ class CustomBadWordList {
   }
 
   /**
-   * Create a read-only 2D array [word, addedTime, remark].
+   * Create a read-only 2D array [word, addedTime].
    * @returns {[string, number][]}
    */
   createArrayView() {
-    return this._badWords.map((badWord) => [
-      badWord.word,
-      badWord.addedTime,
-    ]);
+    return this._badWords.map((badWord) => [badWord.word, badWord.addedTime]);
   }
 
   /**
@@ -124,7 +168,7 @@ class CustomBadWordList {
    * @param {[string, number, string][]} arrayView
    */
   readArrayViewAndUpdate(arrayView) {
-    this._badWords = []; 
+    this._badWords = [];
     arrayView.slice(0, this.maxLength);
     this._badWords = arrayView.map(
       (value) => new CustomBadWord(value[0], value[1])
@@ -136,9 +180,10 @@ class CustomBadWordList {
    * @returns {string[]}
    */
   createWordArray() {
-    return this._badWords.map((badWord) => badWord.word);
+    return this.basic_badWords.concat(
+      this._badWords.map((badWord) => badWord.word)
+    );
   }
 }
 
-export const customBadWordList = new CustomBadWordList(50); // Limit of the number of bad words
-
+export const customBadWordList = new BadWordList(50); // Limit of the number of bad words

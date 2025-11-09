@@ -1,18 +1,18 @@
-'use strict';
-import { PikachuVolleyball } from './offline_version_js/pikavolley.js';
-import { bufferLength, myKeyboard, OnlineKeyboard } from './keyboard_online.js';
-import { SYNC_DIVISOR, channel } from './data_channel/data_channel';
-import { mod } from './utils/mod.js';
-import { askOneMoreGame } from './ui_online.js';
+"use strict";
+import { PikachuVolleyball } from "./offline_version_js/pikavolley.js";
+import { bufferLength, myKeyboard, OnlineKeyboard } from "./keyboard_online.js";
+import { SYNC_DIVISOR, channel } from "./data_channel/data_channel";
+import { mod } from "./utils/mod.js";
+import { askOneMoreGame } from "./ui_online.js";
 import {
   displayPartialIPFor,
   displayNicknameFor,
   displayPeerNicknameFor,
   displayMyAndPeerNicknameShownOrHidden,
-} from './nickname_display.js';
-import { replaySaver } from './replay/replay_saver.js';
-import { PikaUserInput } from './offline_version_js/physics.js';
-import { displayMyAndPeerChatEnabledOrDisabled } from './chat_display.js';
+} from "./nickname_display.js";
+import { replaySaver } from "./replay/replay_saver.js";
+import { PikaUserInput } from "./offline_version_js/physics.js";
+import { displayMyAndPeerChatEnabledOrDisabled } from "./chat_display.js";
 
 /** @typedef GameState @type {function():void} */
 
