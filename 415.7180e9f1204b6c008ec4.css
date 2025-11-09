@@ -54,7 +54,7 @@
   }
 }
 /* Copy of the variables in :root above */
-:root[data-color-scheme="light"] {
+:root[data-color-scheme='light'] {
   --background-color: #ffffff;
   --background-color-with-alpha: rgba(255, 255, 255, 0.8);
   --color: #232629;
@@ -76,7 +76,7 @@
   --amount-to-invert-image: 0;
 }
 /* Copy of the variables in @media (prefers-color-scheme: dark) :root above */
-:root[data-color-scheme="dark"] {
+:root[data-color-scheme='dark'] {
   --background-color: #202124;
   --background-color-with-alpha: rgba(32, 33, 36, 0.9);
   --color: #bdc1c6;
@@ -767,7 +767,7 @@ div.inline {
 div.margin-top-little {
   margin-top: calc(var(--font-size) / 1.5);
 }
-input[type="file"] {
+input[type='file'] {
   display: none;
 }
 label.custom-file-upload {
@@ -848,7 +848,7 @@ div.show-checkboxes-container {
   flex-wrap: wrap;
   gap: 10px;
 }
-label[for="fps-input"] {
+label[for='fps-input'] {
   margin-left: 10px;
 }
 #fps-input {
@@ -1031,7 +1031,7 @@ input.toggle-switch + label {
   transition: background-color 1s;
 }
 input.toggle-switch + label::after {
-  content: "";
+  content: '';
   position: absolute;
   left: var(--toggle-ball-left);
   top: var(--toggle-ball-top);
@@ -1059,12 +1059,12 @@ input.toggle-switch + label::before {
   height: var(--toggle-ball-diameter);
   width: var(--toggle-ball-diameter);
   font-size: var(--toggle-ball-diameter);
-  content: "\2600";
+  content: '\2600';
 }
 input.toggle-switch:checked + label::before {
   left: var(--toggle-ball-left);
-  content: "\263E";
+  content: '\263E';
 }
 
 
-/*# sourceMappingURL=415.d8901ddbc6b00ce1e243.css.map*/
+/*# sourceMappingURL=415.7180e9f1204b6c008ec4.css.map*/
