@@ -1,5 +1,5 @@
-import { getIfLocalStorageIsAvailable } from "../utils/is_local_storage_available";
-const STORAGE_KEY_CUSTOM_LIST = "stringifiedCustomBadWordListArrayView";
+import { getIfLocalStorageIsAvailable } from '../utils/is_local_storage_available';
+const STORAGE_KEY_CUSTOM_LIST = 'stringifiedCustomBadWordListArrayView';
 const isLocalStorageAvailable = getIfLocalStorageIsAvailable();
 
 /**
@@ -26,51 +26,51 @@ class BadWordList {
    * @param {number} maxLength
    */
   constructor(maxLength) {
-    const STORAGE_KEY_DEFAULT_FILTER_TOGGLE = "isDefaultBadWordFilterEnabled";
+    const STORAGE_KEY_DEFAULT_FILTER_TOGGLE = 'isDefaultBadWordFilterEnabled';
     const storedToggleState = window.localStorage.getItem(
       STORAGE_KEY_DEFAULT_FILTER_TOGGLE
     );
-    if (storedToggleState === "false") {
+    if (storedToggleState === 'false') {
       // Use list of basic bad words?
       this.basic_badWords = [];
     } else {
       this.basic_badWords = [
-        "fuck",
-        "fuckyou",
-        "shit",
-        "bitch",
-        "asshole",
-        "nigger",
-        "faggot",
-        "개새",
-        "느금",
-        "ㄴㄱㅁ",
-        "ㄴ금마",
-        "니애미",
-        "ㄴㅇㅁ",
-        "느그",
-        "병신",
-        "병ㅅ",
-        "ㅂㅅ",
-        "ㅂ신",
-        "ㅅㅂ",
-        "새끼",
-        "ㅅㄲ",
-        "시발",
-        "씨발",
-        "ㅅ발",
-        "애미",
-        "애비",
-        "어머니",
-        "엄마",
-        "아버지",
-        "좆",
-        "ㅈ까",
-        "ㅈ밥",
-        "ㅈㅂ",
-        "ㅈ이",
-        "ㅄ",
-        "씹",
+        'fuck',
+        'fuckyou',
+        'shit',
+        'bitch',
+        'asshole',
+        'nigger',
+        'faggot',
+        '개새',
+        '느금',
+        'ㄴㄱㅁ',
+        'ㄴ금마',
+        '니애미',
+        'ㄴㅇㅁ',
+        '느그',
+        '병신',
+        '병ㅅ',
+        'ㅂㅅ',
+        'ㅂ신',
+        'ㅅㅂ',
+        '새끼',
+        'ㅅㄲ',
+        '시발',
+        '씨발',
+        'ㅅ발',
+        '애미',
+        '애비',
+        '어머니',
+        '엄마',
+        '아버지',
+        '좆',
+        'ㅈ까',
+        'ㅈ밥',
+        'ㅈㅂ',
+        'ㅈ이',
+        'ㅄ',
+        '씹',
       ];
     }
     this._badWords = [];

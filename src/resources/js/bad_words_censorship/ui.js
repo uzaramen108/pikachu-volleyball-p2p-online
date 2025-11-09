@@ -1,41 +1,41 @@
 /**
  * Manages UI relevant to bad words censorship
  */
-"use strict";
+'use strict';
 
-import { getIfLocalStorageIsAvailable } from "../utils/is_local_storage_available";
-import { customBadWordList } from "./bad_word_list.js";
+import { getIfLocalStorageIsAvailable } from '../utils/is_local_storage_available';
+import { customBadWordList } from './bad_word_list.js';
 
-const STORAGE_KEY_DEFAULT_FILTER_TOGGLE = "isDefaultBadWordFilterEnabled";
+const STORAGE_KEY_DEFAULT_FILTER_TOGGLE = 'isDefaultBadWordFilterEnabled';
 
 const defaultFilterToggle = document.getElementById(
-  "basic-chat-filter-checkbox"
+  'basic-chat-filter-checkbox'
 );
 const customBadWordsTableContainer = document.getElementById(
-  "blocked-bad-words-table-container"
+  'blocked-bad-words-table-container'
 );
 const customBadWordsTableTbody = document.querySelector(
-  "table.blocked-bad-words-table tbody"
+  'table.blocked-bad-words-table tbody'
 );
 const deleteCustomWordBtn = document.querySelector(
-  "table.blocked-bad-words-table .delete-btn"
+  'table.blocked-bad-words-table .delete-btn'
 );
 const customBadWordsCountSpan = document.getElementById(
-  "number-of-bad-words-addresses"
+  'number-of-bad-words-addresses'
 );
 
-const addCustomWordBtn = document.getElementById("add-custom-word-btn");
-const newCustomWordInput = document.getElementById("new-custom-word-input");
+const addCustomWordBtn = document.getElementById('add-custom-word-btn');
+const newCustomWordInput = document.getElementById('new-custom-word-input');
 
 const isLocalStorageAvailable = getIfLocalStorageIsAvailable();
 
 export function setUpUIForManagingBadWords() {
   if (!isLocalStorageAvailable) {
     if (defaultFilterToggle) {
-      defaultFilterToggle.parentElement.classList.add("hidden");
+      defaultFilterToggle.parentElement.classList.add('hidden');
     }
     if (customBadWordsTableContainer) {
-      customBadWordsTableContainer.classList.add("hidden");
+      customBadWordsTableContainer.classList.add('hidden');
     }
     return;
   }
@@ -60,7 +60,7 @@ function setUpDefaultFilterToggle() {
   }
   // @ts-ignore
   defaultFilterToggle.checked = isEnabled;
-  defaultFilterToggle.addEventListener("change", () => {
+  defaultFilterToggle.addEventListener('change', () => {
     try {
       // @ts-ignore
       window.localStorage.setItem(
@@ -95,12 +95,12 @@ function setUpCustomFilterManagement() {
   displayCustomBadWords(customBadWordList.createArrayView());
   displayNumberOfCustomBadWords();
 
-  document.body.addEventListener("click", (event) => {
+  document.body.addEventListener('click', (event) => {
     Array.from(
       // @ts-ignore
-      customBadWordsTableTbody.getElementsByTagName("tr")
+      customBadWordsTableTbody.getElementsByTagName('tr')
     ).forEach((elem) => {
-      elem.classList.remove("selected");
+      elem.classList.remove('selected');
     });
     // @ts-ignore
     deleteCustomWordBtn.disabled = true;
@@ -109,18 +109,18 @@ function setUpCustomFilterManagement() {
       // @ts-ignore
       customBadWordsTableTbody.contains(target) &&
       // @ts-ignore
-      target.tagName === "TD"
+      target.tagName === 'TD'
     ) {
       // @ts-ignore
-      target.parentElement.classList.add("selected");
+      target.parentElement.classList.add('selected');
       // @ts-ignore
       deleteCustomWordBtn.disabled = false;
     }
   });
-  deleteCustomWordBtn.addEventListener("click", () => {
+  deleteCustomWordBtn.addEventListener('click', () => {
     // @ts-ignore
     const selectedTRElement =
-      customBadWordsTableTbody.querySelector(".selected");
+      customBadWordsTableTbody.querySelector('.selected');
     if (!selectedTRElement) {
       return;
     }
@@ -129,7 +129,7 @@ function setUpCustomFilterManagement() {
     displayCustomBadWords(customBadWordList.createArrayView());
     displayNumberOfCustomBadWords();
   });
-  addCustomWordBtn.addEventListener("click", () => {
+  addCustomWordBtn.addEventListener('click', () => {
     // @ts-ignore
     const newWord = newCustomWordInput.value;
 
@@ -138,9 +138,9 @@ function setUpCustomFilterManagement() {
       displayCustomBadWords(customBadWordList.createArrayView());
       displayNumberOfCustomBadWords();
       // @ts-ignore
-      newCustomWordInput.value = "";
+      newCustomWordInput.value = '';
     } else {
-      console.log("Custom bad word add failed (duplicate, empty, or full).");
+      console.log('Custom bad word add failed (duplicate, empty, or full).');
     }
   });
 }
@@ -158,9 +158,9 @@ function displayCustomBadWords(badWords) {
   }
   // Display the given list
   badWords.forEach((badWord, index) => {
-    const trElement = document.createElement("tr");
-    const tdElementForWord = document.createElement("td");
-    const tdElementForTime = document.createElement("td");
+    const trElement = document.createElement('tr');
+    const tdElementForWord = document.createElement('td');
+    const tdElementForTime = document.createElement('td');
     trElement.appendChild(tdElementForWord);
     trElement.appendChild(tdElementForTime);
     trElement.dataset.index = String(index);

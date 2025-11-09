@@ -1,4 +1,4 @@
-import { customBadWordList } from "./bad_word_list";
+import { customBadWordList } from './bad_word_list';
 
 /**
  * @param {string} message
@@ -21,14 +21,14 @@ export function filterBadWords(message) {
 
   for (let i = 0; i < messageChars.length; i++) {
     const ch = messageChars[i];
-    if (/\p{L}|\p{Emoji}/u.test(ch)) { 
-      mapToOriginal.push(i);  
+    if (/\p{L}|\p{Emoji}/u.test(ch)) {
+      mapToOriginal.push(i);
       cleanedChars.push(ch.toLowerCase());
     }
   }
-  
-  const cleaned = cleanedChars.join("");
-  const pattern = new RegExp(filteredBadWords.join("|"), "gi");
+
+  const cleaned = cleanedChars.join('');
+  const pattern = new RegExp(filteredBadWords.join('|'), 'gi');
   const matches = [...cleaned.matchAll(pattern)];
   const result = messageChars;
 
@@ -37,10 +37,10 @@ export function filterBadWords(message) {
     const end = start + m[0].length;
     for (let i = start; i < end; i++) {
       const origIndex = mapToOriginal[i];
-      result[origIndex] = "*";
+      result[origIndex] = '*';
       // Only replace bad words to * except for blank / number / special character
     }
   }
 
-  return result.join("");
+  return result.join('');
 }
