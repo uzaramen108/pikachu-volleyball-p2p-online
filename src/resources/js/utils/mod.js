@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Return positive modulo n % m

@@ -1,20 +1,20 @@
 /**
  * Manages UI relevant to blocking other players
  */
-"use strict";
-import { getIfLocalStorageIsAvailable } from "../utils/is_local_storage_available";
-import { blockedIPList } from "./blocked_ip_list";
-import { channel } from "../data_channel/data_channel";
+'use strict';
+import { getIfLocalStorageIsAvailable } from '../utils/is_local_storage_available';
+import { blockedIPList } from './blocked_ip_list';
+import { channel } from '../data_channel/data_channel';
 
 const MAX_REMARK_LENGTH = 20;
 
 const blockedIPAddressesTableTbody = document.querySelector(
-  "table.blocked-ip-addresses-table tbody"
+  'table.blocked-ip-addresses-table tbody'
 );
 const deleteBtn = document.querySelector(
-  "table.blocked-ip-addresses-table .delete-btn"
+  'table.blocked-ip-addresses-table .delete-btn'
 );
-const blockThisPeerBtn = document.getElementById("block-this-peer-btn");
+const blockThisPeerBtn = document.getElementById('block-this-peer-btn');
 
 const isLocalStorageAvailable = getIfLocalStorageIsAvailable();
 
@@ -25,15 +25,15 @@ export function setUpUIForBlockingOtherUsers() {
   blockThisPeerBtn.disabled = true;
   if (!isLocalStorageAvailable) {
     document
-      .getElementById("blocked-ip-addresses-table-container")
-      .classList.add("hidden");
+      .getElementById('blocked-ip-addresses-table-container')
+      .classList.add('hidden');
     return;
   }
 
   let stringifiedBlockedIPListArrayView = null;
   try {
     stringifiedBlockedIPListArrayView = window.localStorage.getItem(
-      "stringifiedBlockedIPListArrayView"
+      'stringifiedBlockedIPListArrayView'
     );
   } catch (err) {
     console.log(err);
@@ -44,7 +44,7 @@ export function setUpUIForBlockingOtherUsers() {
     // the previous version localStorage caches of clients
     // can be considered to be all expired.
     if (arrayView.length > 0 && arrayView[0].length !== 4) {
-      window.localStorage.removeItem("stringifiedBlockedIPListArrayView");
+      window.localStorage.removeItem('stringifiedBlockedIPListArrayView');
       location.reload();
     } else {
       blockedIPList.readArrayViewAndUpdate(arrayView);
@@ -53,12 +53,12 @@ export function setUpUIForBlockingOtherUsers() {
   displayBlockedIPs(blockedIPList.createArrayView());
   displayNumberOfBlockedIPAddresses();
 
-  document.body.addEventListener("click", (event) => {
+  document.body.addEventListener('click', (event) => {
     Array.from(
       // @ts-ignore
-      blockedIPAddressesTableTbody.getElementsByTagName("tr")
+      blockedIPAddressesTableTbody.getElementsByTagName('tr')
     ).forEach((elem) => {
-      elem.classList.remove("selected");
+      elem.classList.remove('selected');
     });
     // @ts-ignore
     deleteBtn.disabled = true;
@@ -67,23 +67,23 @@ export function setUpUIForBlockingOtherUsers() {
       // @ts-ignore
       blockedIPAddressesTableTbody.contains(target) &&
       // @ts-ignore
-      target.tagName === "TD"
+      target.tagName === 'TD'
     ) {
       // select TR element which is parent element of TD element
       // @ts-ignore
-      target.parentElement.classList.add("selected");
+      target.parentElement.classList.add('selected');
       // @ts-ignore
       deleteBtn.disabled = false;
     }
   });
-  deleteBtn.addEventListener("click", () => {
+  deleteBtn.addEventListener('click', () => {
     const selectedTRElement =
-      blockedIPAddressesTableTbody.querySelector(".selected");
+      blockedIPAddressesTableTbody.querySelector('.selected');
     // @ts-ignore
     blockedIPList.removeAt(Number(selectedTRElement.dataset.index));
     try {
       window.localStorage.setItem(
-        "stringifiedBlockedIPListArrayView",
+        'stringifiedBlockedIPListArrayView',
         JSON.stringify(blockedIPList.createArrayView())
       );
     } catch (err) {
@@ -94,25 +94,25 @@ export function setUpUIForBlockingOtherUsers() {
   });
 
   const askAddThisPeerToBlockedListBox = document.getElementById(
-    "ask-add-this-peer-to-blocked-list"
+    'ask-add-this-peer-to-blocked-list'
   );
   const askAddThisPeerToBlockedListYesBtn = document.getElementById(
-    "ask-add-this-peer-to-blocked-list-yes-btn"
+    'ask-add-this-peer-to-blocked-list-yes-btn'
   );
   const askAddThisPeerToBlockedListNoBtn = document.getElementById(
-    "ask-add-this-peer-to-blocked-list-no-btn"
+    'ask-add-this-peer-to-blocked-list-no-btn'
   );
   const noticeAddingThisPeerToBlockedListIsCompletedBox =
     document.getElementById(
-      "notice-adding-this-peer-to-blocked-list-is-completed"
+      'notice-adding-this-peer-to-blocked-list-is-completed'
     );
-  blockThisPeerBtn.addEventListener("click", () => {
+  blockThisPeerBtn.addEventListener('click', () => {
     document.getElementById(
-      "partial-ip-address-of-this-peer-to-be-blocked"
+      'partial-ip-address-of-this-peer-to-be-blocked'
     ).textContent = channel.peerPartialPublicIP;
-    askAddThisPeerToBlockedListBox.classList.remove("hidden");
+    askAddThisPeerToBlockedListBox.classList.remove('hidden');
   });
-  askAddThisPeerToBlockedListYesBtn.addEventListener("click", () => {
+  askAddThisPeerToBlockedListYesBtn.addEventListener('click', () => {
     // @ts-ignore
     blockThisPeerBtn.disabled = true;
     blockedIPList.AddStagedPeerHashedIPWithPeerPartialIP(
@@ -120,31 +120,31 @@ export function setUpUIForBlockingOtherUsers() {
     );
     try {
       window.localStorage.setItem(
-        "stringifiedBlockedIPListArrayView",
+        'stringifiedBlockedIPListArrayView',
         JSON.stringify(blockedIPList.createArrayView())
       );
     } catch (err) {
       console.log(err);
     }
-    askAddThisPeerToBlockedListBox.classList.add("hidden");
-    noticeAddingThisPeerToBlockedListIsCompletedBox.classList.remove("hidden");
+    askAddThisPeerToBlockedListBox.classList.add('hidden');
+    noticeAddingThisPeerToBlockedListIsCompletedBox.classList.remove('hidden');
   });
-  askAddThisPeerToBlockedListNoBtn.addEventListener("click", () => {
-    askAddThisPeerToBlockedListBox.classList.add("hidden");
+  askAddThisPeerToBlockedListNoBtn.addEventListener('click', () => {
+    askAddThisPeerToBlockedListBox.classList.add('hidden');
   });
   document
     .getElementById(
-      "notice-adding-this-peer-to-blocked-list-is-completed-exit-game-btn"
+      'notice-adding-this-peer-to-blocked-list-is-completed-exit-game-btn'
     )
-    .addEventListener("click", () => {
+    .addEventListener('click', () => {
       location.reload();
     });
   document
     .getElementById(
-      "notice-adding-this-peer-to-blocked-list-is-completed-do-not-exit-game-btn"
+      'notice-adding-this-peer-to-blocked-list-is-completed-do-not-exit-game-btn'
     )
-    .addEventListener("click", () => {
-      noticeAddingThisPeerToBlockedListIsCompletedBox.classList.add("hidden");
+    .addEventListener('click', () => {
+      noticeAddingThisPeerToBlockedListIsCompletedBox.classList.add('hidden');
     });
 }
 
@@ -155,7 +155,7 @@ export function showBlockThisPeerBtn() {
   if (!isLocalStorageAvailable) {
     return;
   }
-  blockThisPeerBtn.classList.remove("hidden");
+  blockThisPeerBtn.classList.remove('hidden');
   if (blockedIPList.isPeerHashedIPStaged() && !blockedIPList.isFull()) {
     // @ts-ignore
     blockThisPeerBtn.disabled = false;
@@ -175,11 +175,11 @@ function displayBlockedIPs(blockedIPs) {
   }
   // Display the given list
   blockedIPs.forEach((blockedIP, index) => {
-    const trElement = document.createElement("tr");
-    const tdElementForIP = document.createElement("td");
-    const tdElementForTime = document.createElement("td");
-    const tdElementForRemark = document.createElement("td");
-    const inputElement = document.createElement("input");
+    const trElement = document.createElement('tr');
+    const tdElementForIP = document.createElement('td');
+    const tdElementForTime = document.createElement('td');
+    const tdElementForRemark = document.createElement('td');
+    const inputElement = document.createElement('input');
     tdElementForRemark.appendChild(inputElement);
     trElement.appendChild(tdElementForIP);
     trElement.appendChild(tdElementForTime);
@@ -188,14 +188,14 @@ function displayBlockedIPs(blockedIPs) {
     tdElementForIP.textContent = blockedIP[1];
     tdElementForTime.textContent = new Date(blockedIP[2]).toLocaleString();
     inputElement.value = blockedIP[3];
-    inputElement.addEventListener("input", (event) => {
+    inputElement.addEventListener('input', (event) => {
       // @ts-ignore
       const newRemark = event.target.value.slice(0, MAX_REMARK_LENGTH);
       inputElement.value = newRemark;
       blockedIPList.editRemarkAt(index, newRemark);
       try {
         window.localStorage.setItem(
-          "stringifiedBlockedIPListArrayView",
+          'stringifiedBlockedIPListArrayView',
           JSON.stringify(blockedIPList.createArrayView())
         );
       } catch (err) {
@@ -210,6 +210,6 @@ function displayBlockedIPs(blockedIPs) {
  * Display the number of blocked IPs in the list
  */
 function displayNumberOfBlockedIPAddresses() {
-  document.getElementById("number-of-blocked-ip-addresses").textContent =
+  document.getElementById('number-of-blocked-ip-addresses').textContent =
     String(blockedIPList.length);
 }

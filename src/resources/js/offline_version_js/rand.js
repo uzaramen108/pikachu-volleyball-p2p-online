@@ -1,7 +1,7 @@
 /**
  * This module contains random number generator used for the game
  */
-"use strict";
+'use strict';
 /** @typedef {function():number} RNG */
 
 /** @type {RNG} custom RNG (random number generator) function which generates a random number in [0, 1] */

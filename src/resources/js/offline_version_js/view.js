@@ -5,12 +5,12 @@
  * The codes gained by reverse engineering are commented by the address of the function referred to in the machine code.
  * ex) FUN_00405d50 means the function at the address 00405d50 in the machine code.
  */
-"use strict";
-import { AnimatedSprite } from "@pixi/sprite-animated";
-import { Sprite } from "@pixi/sprite";
-import { Container } from "@pixi/display";
-import { Cloud, Wave, cloudAndWaveEngine } from "./cloud_and_wave.js";
-import { ASSETS_PATH } from "./assets_path.js";
+'use strict';
+import { AnimatedSprite } from '@pixi/sprite-animated';
+import { Sprite } from '@pixi/sprite';
+import { Container } from '@pixi/display';
+import { Cloud, Wave, cloudAndWaveEngine } from './cloud_and_wave.js';
+import { ASSETS_PATH } from './assets_path.js';
 
 /** @typedef {import('@pixi/loaders').LoaderResource} LoaderResource */
 /** @typedef {import('@pixi/core').Texture} Texture */
@@ -454,7 +454,7 @@ export class GameView {
     }
   }
 
-  /** @typedef {import("./physics").PikaPhysics} PikaPhysics */
+  /** @typedef {import("./physics.js").PikaPhysics} PikaPhysics */
   /**
    * Draw players and ball in the given physics object
    * @param {PikaPhysics} physics PikaPhysics object to draw
@@ -836,7 +836,7 @@ function makeBallAnimatedSprites(textures) {
     getBallTexture(2),
     getBallTexture(3),
     getBallTexture(4),
-    getBallTexture("hyper"),
+    getBallTexture('hyper'),
   ];
   const ballAnimatedSprite = new AnimatedSprite(ballTextureArray, false);
 

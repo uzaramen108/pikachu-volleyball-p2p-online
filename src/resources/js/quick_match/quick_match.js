@@ -3,38 +3,38 @@
  *
  * Major parts of fetch API code is copied from https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
  */
-"use strict";
-import { serverURL } from "./quick_match_server_url.js";
-import { createRoom, joinRoom } from "../data_channel/data_channel.js";
-import { blockedIPList } from "../block_other_players/blocked_ip_list.js";
-import { MATCH_GROUP } from "./match_group.js";
+'use strict';
+import { serverURL } from './quick_match_server_url.js';
+import { createRoom, joinRoom } from '../data_channel/data_channel.js';
+import { blockedIPList } from '../block_other_players/blocked_ip_list.js';
+import { MATCH_GROUP } from './match_group.js';
 import {
   printCommunicationCount,
   printQuickMatchState,
   printQuickMatchLog,
   printFailedToConnectToQuickMatchServer,
   printNumberOfSuccessfulQuickMatches,
-} from "../ui_online.js";
+} from '../ui_online.js';
 
 let roomIdToCreate = null;
 let matchGroup = null;
 let communicationCount = null;
 
 const MESSAGE_TO_SERVER = {
-  initial: "initial",
-  roomCreated: "roomCreated",
-  quickMatchSuccess: "quickMatchSuccess",
-  withFriendSuccess: "withFriendSuccess",
-  cancel: "cancel",
+  initial: 'initial',
+  roomCreated: 'roomCreated',
+  quickMatchSuccess: 'quickMatchSuccess',
+  withFriendSuccess: 'withFriendSuccess',
+  cancel: 'cancel',
 };
 
 export const MESSAGE_TO_CLIENT = {
-  createRoom: "createRoom",
-  keepWait: "keepWait", // keep sending wait packet
-  connectToPeer: "connectToPeer",
-  connectToPeerAfterAWhile: "connectToPeerAfterAWhile",
-  waitPeerConnection: "waitPeerConnection", // wait the peer to connect to you
-  abandoned: "abandoned",
+  createRoom: 'createRoom',
+  keepWait: 'keepWait', // keep sending wait packet
+  connectToPeer: 'connectToPeer',
+  connectToPeerAfterAWhile: 'connectToPeerAfterAWhile',
+  waitPeerConnection: 'waitPeerConnection', // wait the peer to connect to you
+  abandoned: 'abandoned',
 };
 
 /**
@@ -64,7 +64,7 @@ export function startQuickMatch(
  * In quick match, the room creator send this quick match success message if data channel is opened.
  */
 export function sendQuickMatchSuccessMessageToServer() {
-  console.log("Send quick match success message to server");
+  console.log('Send quick match success message to server');
   postData(
     serverURL,
     objectToSendToServer(
@@ -79,7 +79,7 @@ export function sendQuickMatchSuccessMessageToServer() {
  * In "with friend", the room creator send this packet if data channel is opened.
  */
 export function sendWithFriendSuccessMessageToServer() {
-  console.log("Send with friend success message to server");
+  console.log('Send with friend success message to server');
   postData(
     serverURL,
     objectToSendToServer(MESSAGE_TO_SERVER.withFriendSuccess, roomIdToCreate)
@@ -90,7 +90,7 @@ export function sendWithFriendSuccessMessageToServer() {
  * In quick match, the room creator send this quick match cancel packet if they want to cancel quick match i.e. want to stop waiting.
  */
 export function sendCancelQuickMatchMessageToServer() {
-  console.log("Send cancel quick match message to server");
+  console.log('Send cancel quick match message to server');
   postData(
     serverURL,
     objectToSendToServer(MESSAGE_TO_SERVER.cancel, roomIdToCreate, matchGroup)
@@ -98,20 +98,20 @@ export function sendCancelQuickMatchMessageToServer() {
 }
 
 // Example POST method implementation:
-async function postData(url = "", data = {}) {
+async function postData(url = '', data = {}) {
   try {
     // Default options are marked with *
     const response = await fetch(url, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors', // no-cors, *cors, same-origin
+      cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, *same-origin, omit
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
-      redirect: "follow", // manual, *follow, error
-      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      redirect: 'follow', // manual, *follow, error
+      referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
       body: JSON.stringify(data), // body data type must match "Content-Type" header
     });
     return response.json(); // parses JSON response into native JavaScript objects
@@ -135,7 +135,7 @@ const callback = (data) => {
 
   switch (data.message) {
     case MESSAGE_TO_CLIENT.createRoom:
-      console.log("Create room!");
+      console.log('Create room!');
       createRoom(roomIdToCreate).then(() =>
         postData(
           serverURL,
@@ -148,7 +148,7 @@ const callback = (data) => {
       );
       break;
     case MESSAGE_TO_CLIENT.keepWait:
-      console.log("Keep wait!");
+      console.log('Keep wait!');
       window.setTimeout(() => {
         postData(
           serverURL,
@@ -161,7 +161,7 @@ const callback = (data) => {
       }, 1000);
       break;
     case MESSAGE_TO_CLIENT.waitPeerConnection:
-      console.log("Wait peer connection!");
+      console.log('Wait peer connection!');
       // If the following line is executed after data channel is opened,
       // peer hashed ip can be staged too late to enable blocking this peer button,
       // which checked if peer hashed ip is staged already.
@@ -170,24 +170,24 @@ const callback = (data) => {
       blockedIPList.stagePeerHashedIP(data.hashedPeerIP);
       break;
     case MESSAGE_TO_CLIENT.connectToPeerAfterAWhile:
-      console.log("Connect To Peer after 3 seconds...");
+      console.log('Connect To Peer after 3 seconds...');
       window.setTimeout(() => {
-        console.log("Connect To Peer!");
+        console.log('Connect To Peer!');
         printQuickMatchState(MESSAGE_TO_CLIENT.connectToPeer);
         blockedIPList.stagePeerHashedIP(data.hashedPeerIP);
         joinRoom(data.roomId);
       }, 3000);
       break;
     case MESSAGE_TO_CLIENT.connectToPeer:
-      console.log("Connect To Peer!");
+      console.log('Connect To Peer!');
       blockedIPList.stagePeerHashedIP(data.hashedPeerIP);
       joinRoom(data.roomId);
       break;
     case MESSAGE_TO_CLIENT.abandoned:
-      console.log("room id abandoned.. please retry quick match.");
+      console.log('room id abandoned.. please retry quick match.');
       break;
     case MESSAGE_TO_CLIENT.cancelAccepted:
-      console.log("quick match cancel accepted");
+      console.log('quick match cancel accepted');
       // TODO: do something
       break;
   }

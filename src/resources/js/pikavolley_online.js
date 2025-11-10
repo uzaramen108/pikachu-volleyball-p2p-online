@@ -1,7 +1,9 @@
 "use strict";
 import { PikachuVolleyball } from "./offline_version_js/pikavolley.js";
 import { bufferLength, myKeyboard, OnlineKeyboard } from "./keyboard_online.js";
-import { SYNC_DIVISOR, channel } from "./data_channel/data_channel";
+import { SYNC_DIVISOR, channel } from "./data_channel/data_channel.js";
+import { relayChannel } from './spectate/relay_channel.js';
+import { convertUserInputTo5bitNumber } from './utils/input_conversion.js';
 import { mod } from "./utils/mod.js";
 import { askOneMoreGame } from "./ui_online.js";
 import {
@@ -13,6 +15,7 @@ import {
 import { replaySaver } from "./replay/replay_saver.js";
 import { PikaUserInput } from "./offline_version_js/physics.js";
 import { displayMyAndPeerChatEnabledOrDisabled } from "./chat_display.js";
+import { InputSaverForSpectator } from "./spectate/spectate_saver.js";
 
 /** @typedef GameState @type {function():void} */
 
@@ -43,6 +46,7 @@ export class PikachuVolleyballOnline extends PikachuVolleyball {
     this.isFirstGame = true;
 
     this.willSaveReplay = true;
+    this.hasSentGameOverSignal = false;
   }
 
   /**
@@ -159,15 +163,23 @@ export class PikachuVolleyballOnline extends PikachuVolleyball {
       player2Input.yDirection = this.keyboardArray[1].yDirection;
       player2Input.powerHit = this.keyboardArray[1].powerHit;
       replaySaver.recordInputs(player1Input, player2Input);
+      if (channel.amICreatedRoom) {
+        if (this.slowMotionFramesLeft > 0) {
+          if (this.slowMotionNumOfSkippedFrames % Math.round(this.normalFPS / this.slowMotionFPS) !== 0) {
+            InputSaverForSpectator.recordInputs(player1Input, player2Input);
+          }
+        } else {
+          InputSaverForSpectator.recordInputs(player1Input, player2Input);
+        }
+      }
     }
-
+    
     // slow-mo effect
     if (this.slowMotionFramesLeft > 0) {
       this.slowMotionNumOfSkippedFrames++;
       if (
         this.slowMotionNumOfSkippedFrames %
-          Math.round(this.normalFPS / this.slowMotionFPS) !==
-        0
+          Math.round(this.normalFPS / this.slowMotionFPS) !== 0
       ) {
         return;
       }
@@ -178,6 +190,17 @@ export class PikachuVolleyballOnline extends PikachuVolleyball {
     this.physics.player1.isComputer = false;
     this.physics.player2.isComputer = false;
     this.state();
+    if (this.gameEnded && !this.hasSentGameOverSignal) {
+      // P1 (방장)만 종료 신호를 전송
+      if (channel.amICreatedRoom) {
+        console.log("경기가 종료되었습니다. 서버에 'End of Stream' 신호를 전송합니다.");
+        relayChannel.send({
+          type: "inputs",
+          value: -1 // Value that norices the game is over
+        });
+      }
+      this.hasSentGameOverSignal = true;
+    }
 
     // window.setTimeout(callback, 0) is used because it puts
     // the callback to the message queue of Javascript runtime event loop,
@@ -189,93 +212,6 @@ export class PikachuVolleyballOnline extends PikachuVolleyball {
       } else {
         window.setTimeout(this.gameLoop.bind(this), 0);
       }
-    }
-  }
-}
-
-// --------------------------------------------------
-// [새로 추가] 관전자 전용 게임 클래스
-// --------------------------------------------------
-/**
- * Class representing Pikachu Volleyball spectator mode
- */
-// @ts-ignore
-export class PikachuVolleyballSpectator extends PikachuVolleyball {
-  constructor(stage, resources, p1Queue, p2Queue) {
-    super(stage, resources);
-    this.physics.player1.isComputer = false;
-    this.physics.player2.isComputer = false;
-
-    // @ts-ignore
-    this.keyboardArray[0].unsubscribe();
-    // @ts-ignore
-    this.keyboardArray[1].unsubscribe();
-
-    // [핵심] 키보드를 '관전자 큐' 2개에 연결하네
-    this.player1OnlineKeyboard = new OnlineKeyboard(p1Queue);
-    this.player2OnlineKeyboard = new OnlineKeyboard(p2Queue);
-
-    // P1(왼쪽)은 P1 큐, P2(오른쪽)는 P2 큐
-    this.keyboardArray = [this.player1OnlineKeyboard, this.player2OnlineKeyboard];
-
-    this._syncCounter = 0;
-    this.noInputFrameTotal.menu = Infinity;
-  }
-
-  get syncCounter() {
-    return this._syncCounter;
-  }
-
-  set syncCounter(counter) {
-    this._syncCounter = mod(counter, SYNC_DIVISOR);
-  }
-
-  /**
-   * Spectator Game loop
-   * This is a simplified version of PikachuVolleyballOnline's loop.
-   */
-  spectatorGameLoop() {
-    // 1. P1과 P2의 현재 프레임(syncCounter) 입력이 모두 큐에 있는지 확인
-    const checkForP1Input = this.player1OnlineKeyboard.isInputOnQueue(
-      this.syncCounter
-    );
-    const checkForP2Input = this.player2OnlineKeyboard.isInputOnQueue(
-      this.syncCounter
-    );
-
-    if (!checkForP1Input || !checkForP2Input) {
-      // 아직 데이터가 도착하지 않았네. 다음 Ticker까지 대기.
-      return;
-    }
-
-    // 2. 두 플레이어의 입력이 모두 준비됨. 큐에서 입력을 가져오게.
-    this.player1OnlineKeyboard.getInput(this.syncCounter);
-    this.player2OnlineKeyboard.getInput(this.syncCounter);
-    this.syncCounter++; // 다음 프레임으로 이동
-
-    // 3. (slow-mo 로직 복사)
-    if (this.slowMotionFramesLeft > 0) {
-      this.slowMotionNumOfSkippedFrames++;
-      if (
-        this.slowMotionNumOfSkippedFrames %
-          Math.round(this.normalFPS / this.slowMotionFPS) !==
-        0
-      ) {
-        return;
-      }
-      this.slowMotionFramesLeft--;
-      this.slowMotionNumOfSkippedFrames = 0;
-    }
-
-    // 4. [핵심] 게임 상태를 1프레임 진행시키고 화면에 그리게.
-    this.state(); 
-
-    // 5. (캐치업(catch-up) 로직)
-    if (
-      this.player1OnlineKeyboard.isInputOnQueue(this.syncCounter) &&
-      this.player2OnlineKeyboard.isInputOnQueue(this.syncCounter)
-    ) {
-      window.setTimeout(this.spectatorGameLoop.bind(this), 0);
     }
   }
 }

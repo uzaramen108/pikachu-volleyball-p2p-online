@@ -1,9 +1,9 @@
 /**
  * This module takes charge of the game audio (or sounds)
  */
-"use strict";
-import { sound, Sound, filters } from "@pixi/sound";
-import { ASSETS_PATH } from "./assets_path.js";
+'use strict';
+import { sound, Sound, filters } from '@pixi/sound';
+import { ASSETS_PATH } from './assets_path.js';
 
 const SOUNDS = ASSETS_PATH.SOUNDS;
 
@@ -45,7 +45,7 @@ export class PikaAudio {
    */
   adjustVolume() {
     for (const prop in this.sounds) {
-      if (prop === "bgm") {
+      if (prop === 'bgm') {
         this.sounds[prop].volume = this.properBGMVolume;
       } else {
         this.sounds[prop].volume = this.properSFXVolume;
@@ -79,7 +79,7 @@ export class PikaAudio {
       volume = 0;
     }
     for (const prop in this.sounds) {
-      if (prop !== "bgm") {
+      if (prop !== 'bgm') {
         this.sounds[prop].volume = volume;
       }
     }

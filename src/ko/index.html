@@ -306,6 +306,7 @@
       <div class="margin-top grid-1-1">
         <button type="button" id="quick-match-btn">퀵 매치 (엔터)</button>
         <button type="button" id="with-your-friend-btn">친구와 함께</button>
+        <button type="button" id="show-list-for-spectator">관전하기</button>
       </div>
       <div id="blocked-ip-addresses-table-container" class="margin-top">
         <details>
@@ -581,8 +582,6 @@
         입력한 방 ID에 해당하는 방에 다른 사람이 이미 들어갔습니다.
       </div>
       <div id="connection-failed" class="hidden">연결에 실패했습니다.</div>
-      <div id="spectate-link-container" class="hidden" style="margin-top: 1.5em; font-size: 1.1em; line-height: 1.6;">
-      </div>
       <div id="replay-viewer-at" class="hidden">
         리플레이 재생기 주소:
         https://gorisanson.github.io/pikachu-volleyball-p2p-online/ko/replay/
@@ -726,6 +725,22 @@
           알겠어요
         </button>
       </div>
+    </div>
+    <div
+      id="spectator-room-list-box"
+      class="fade-in-box notice fixed hidden"
+    >
+      <p class="thick">현재 방송 중인 방 목록</p>
+      <div id="spectator-room-list-content">
+        <p>방 목록을 불러오는 중...</p>
+      </div>
+      <button
+        type="button"
+        id="cancel-spectate-btn"
+        class="btn-in-box large"
+      >
+        <span class="no-wrap">관전</span> 취소
+      </button>
     </div>
     <div id="flex-container" class="hidden">
       <div id="menu-bar">
@@ -931,14 +946,6 @@
             유지<br />
             <span class="no-wrap">"둘이서 같이~"</span>(아래) - 플레이 위치 서로
             바꾸기
-          </div>
-        </div>
-        <div class.="fade-in-box peer-loading black" id="spectator-status-box" style="display: none;">
-          <div>
-            <p id="spectator-status-text">관전 서버에 접속 중...</p>
-            <div id="progress-bar-border">
-              <div id="progress-bar" style="width: 0%"></div>
-            </div>
           </div>
         </div>
         <div class="fade-in-box peer-loading black" id="peer-loading-box">

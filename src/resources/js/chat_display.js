@@ -5,13 +5,13 @@
  * The positions are random but one message should appears on the same (random) position for both peers.
  * It is achieved by setting the same RNG (random number generator) for each player's chat box.
  */
-"use strict";
+'use strict';
 import {
   channel,
   sendChatEnabledMessageToPeer,
-} from "./data_channel/data_channel.js";
-import { replaySaver } from "./replay/replay_saver.js";
-import { filterBadWords } from "./bad_words_censorship/chat_filter.js";
+} from './data_channel/data_channel.js';
+import { replaySaver } from './replay/replay_saver.js';
+import { filterBadWords } from './bad_words_censorship/chat_filter.js'
 
 /** @typedef {import('./pikavolley_online.js').PikachuVolleyballOnline} PikachuVolleyballOnline */
 
@@ -20,9 +20,9 @@ let getSpeechBubbleNeeded = null; // it is assigned a function after the game as
 let player1ChatRng = null;
 let player2ChatRng = null;
 
-const canvasContainer = document.getElementById("game-canvas-container");
-let player1ChatBox = document.getElementById("player1-chat-box");
-let player2ChatBox = document.getElementById("player2-chat-box");
+const canvasContainer = document.getElementById('game-canvas-container');
+let player1ChatBox = document.getElementById('player1-chat-box');
+let player2ChatBox = document.getElementById('player2-chat-box');
 
 /**
  * Set getSpeechBubbleNeeded function
@@ -30,7 +30,7 @@ let player2ChatBox = document.getElementById("player2-chat-box");
  */
 export function setGetSpeechBubbleNeeded(pikaVolley) {
   getSpeechBubbleNeeded = () => {
-    if (document.querySelectorAll(".fade-in-box:not(.hidden)").length > 0) {
+    if (document.querySelectorAll('.fade-in-box:not(.hidden)').length > 0) {
       return true;
     }
     if (
@@ -59,13 +59,13 @@ export function enableChat(turnOn) {
 }
 
 export function displayMyAndPeerChatEnabledOrDisabled() {
-  const elem1 = document.getElementById("player1-chat-disabled");
-  const elem2 = document.getElementById("player2-chat-disabled");
+  const elem1 = document.getElementById('player1-chat-disabled');
+  const elem2 = document.getElementById('player2-chat-disabled');
   const displayEnabled = (isChatEnabled, elem) => {
     if (isChatEnabled) {
-      elem.classList.add("hidden");
+      elem.classList.add('hidden');
     } else {
-      elem.classList.remove("hidden");
+      elem.classList.remove('hidden');
     }
   };
 
@@ -87,8 +87,8 @@ export function displayMyAndPeerChatEnabledOrDisabled() {
 }
 
 export function hideChat() {
-  player1ChatBox.classList.add("hidden");
-  player2ChatBox.classList.add("hidden");
+  player1ChatBox.classList.add('hidden');
+  player2ChatBox.classList.add('hidden');
 }
 
 export function displayMyChatMessage(message) {
@@ -106,7 +106,7 @@ export function displayMyChatMessage(message) {
 }
 
 export function displayPeerChatMessage(message) {
-  message = filterBadWords(message); // add chat_filter code only peer's chat
+  message = filterBadWords(message) // add chat_filter code only peer's chat
   if (channel.amIPlayer2 === null) {
     if (channel.amICreatedRoom) {
       displayChatMessageAt(message, 2);
@@ -135,15 +135,15 @@ export function displayChatMessageAt(message, whichPlayerSide) {
     // @ts-ignore
     newChatBox.style.right = `${55 + 25 * player1ChatRng()}%`;
     // @ts-ignore
-    newChatBox.classList.remove("hidden");
+    newChatBox.classList.remove('hidden');
     if (getSpeechBubbleNeeded && !getSpeechBubbleNeeded()) {
       // If speech Bubble is not needed
       // @ts-ignore
-      newChatBox.classList.remove("in-speech-bubble");
+      newChatBox.classList.remove('in-speech-bubble');
     } else {
       // if speech bubble is not needed
       // @ts-ignore
-      newChatBox.classList.add("in-speech-bubble");
+      newChatBox.classList.add('in-speech-bubble');
     }
     canvasContainer.replaceChild(newChatBox, player1ChatBox);
     // @ts-ignore
@@ -156,15 +156,15 @@ export function displayChatMessageAt(message, whichPlayerSide) {
     // @ts-ignore
     newChatBox.style.left = `${55 + 25 * player2ChatRng()}%`;
     // @ts-ignore
-    newChatBox.classList.remove("hidden");
+    newChatBox.classList.remove('hidden');
     if (getSpeechBubbleNeeded && !getSpeechBubbleNeeded()) {
       // If speech Bubble is not needed
       // @ts-ignore
-      newChatBox.classList.remove("in-speech-bubble");
+      newChatBox.classList.remove('in-speech-bubble');
     } else {
       // if speech bubble is not needed
       // @ts-ignore
-      newChatBox.classList.add("in-speech-bubble");
+      newChatBox.classList.add('in-speech-bubble');
     }
     canvasContainer.replaceChild(newChatBox, player2ChatBox);
     // @ts-ignore

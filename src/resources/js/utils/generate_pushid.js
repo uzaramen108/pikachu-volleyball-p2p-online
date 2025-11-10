@@ -5,7 +5,7 @@
  * Modified the original code somewhat so that the generated id can be easily distinguishable by human eye
  * and Web Crypto API is used instead of Math.random if available.
  */
-"use strict";
+'use strict';
 
 /**
  * Fancy ID generator that creates 20-character string identifiers with the following properties:
@@ -19,7 +19,7 @@
  */
 export const generatePushID = (function () {
   // Modeled after base32 web-safe chars, but ordered by ASCII.
-  const PUSH_CHARS = "23456789abcdefghijkmnpqrstuvwxyz";
+  const PUSH_CHARS = '23456789abcdefghijkmnpqrstuvwxyz';
 
   // Timestamp of last push, used to prevent local collisions if you push twice in one ms.
   let lastPushTime = 0;
@@ -42,13 +42,13 @@ export const generatePushID = (function () {
       now = Math.floor(now / 32);
     }
     if (now !== 0)
-      throw new Error("We should have converted the entire timestamp.");
+      throw new Error('We should have converted the entire timestamp.');
 
-    let id = timeStampChars.join("");
+    let id = timeStampChars.join('');
     if (!duplicateTime) {
       let array;
       if (
-        typeof window.crypto !== "undefined" &&
+        typeof window.crypto !== 'undefined' &&
         window.crypto.getRandomValues
       ) {
         array = new Uint32Array(10);
@@ -70,7 +70,7 @@ export const generatePushID = (function () {
     for (let i = 0; i < 10; i++) {
       id += PUSH_CHARS.charAt(lastRandChars[i]);
     }
-    if (id.length !== 20) throw new Error("Length should be 20.");
+    if (id.length !== 20) throw new Error('Length should be 20.');
 
     return id;
   };

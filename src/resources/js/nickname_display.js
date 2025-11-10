@@ -1,5 +1,5 @@
-import { channel } from "./data_channel/data_channel";
-import { filterBadWords } from "./bad_words_censorship/chat_filter.js";
+import { channel } from './data_channel/data_channel';
+import { filterBadWords } from './bad_words_censorship/chat_filter.js';
 
 /**
  * Display nickname for the player
@@ -9,9 +9,9 @@ import { filterBadWords } from "./bad_words_censorship/chat_filter.js";
 export function displayNicknameFor(nickname, isForPlayer2) {
   let nicknameElm = null;
   if (!isForPlayer2) {
-    nicknameElm = document.getElementById("player1-nickname");
+    nicknameElm = document.getElementById('player1-nickname');
   } else {
-    nicknameElm = document.getElementById("player2-nickname");
+    nicknameElm = document.getElementById('player2-nickname');
   }
   nicknameElm.textContent = nickname;
 }
@@ -25,9 +25,9 @@ export function displayNicknameFor(nickname, isForPlayer2) {
 export function displayPeerNicknameFor(nickname, isForPlayer2) {
   let nicknameElm = null;
   if (!isForPlayer2) {
-    nicknameElm = document.getElementById("player1-nickname");
+    nicknameElm = document.getElementById('player1-nickname');
   } else {
-    nicknameElm = document.getElementById("player2-nickname");
+    nicknameElm = document.getElementById('player2-nickname');
   }
   nicknameElm.textContent = filterBadWords(nickname);
 }
@@ -40,21 +40,21 @@ export function displayPeerNicknameFor(nickname, isForPlayer2) {
 export function displayPartialIPFor(partialIP, isForPlayer2) {
   let partialIPElm = null;
   if (!isForPlayer2) {
-    partialIPElm = document.getElementById("player1-partial-ip");
+    partialIPElm = document.getElementById('player1-partial-ip');
   } else {
-    partialIPElm = document.getElementById("player2-partial-ip");
+    partialIPElm = document.getElementById('player2-partial-ip');
   }
   partialIPElm.textContent = partialIP;
 }
 
 export function displayMyAndPeerNicknameShownOrHidden() {
-  const elem1 = document.getElementById("player1-hiding-peer-nickname");
-  const elem2 = document.getElementById("player2-hiding-peer-nickname");
+  const elem1 = document.getElementById('player1-hiding-peer-nickname');
+  const elem2 = document.getElementById('player2-hiding-peer-nickname');
   const displayShown = (isNicknameShown, elem) => {
     if (isNicknameShown) {
-      elem.classList.add("hidden");
+      elem.classList.add('hidden');
     } else {
-      elem.classList.remove("hidden");
+      elem.classList.remove('hidden');
     }
   };
 

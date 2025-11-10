@@ -15,20 +15,22 @@ export function filterBadWords(message) {
     return message;
   }
 
-  let cleaned = "";
+  const cleanedChars = [];
   const mapToOriginal = []; // List for remembering what kind of, where was a blank / number / special character
+  const messageChars = Array.from(message);
 
-  for (let i = 0; i < message.length; i++) {
-    const ch = message[i];
-    if (/\p{L}/u.test(ch)) {
-      mapToOriginal.push(i); // Push contents to mapToOriginal except for blank / number / special character
-      cleaned += ch.toLowerCase();
+  for (let i = 0; i < messageChars.length; i++) {
+    const ch = messageChars[i];
+    if (/\p{L}|\p{Emoji}/u.test(ch)) { 
+      mapToOriginal.push(i);  
+      cleanedChars.push(ch.toLowerCase());
     }
   }
-
-  const pattern = new RegExp(filteredBadWords.join("|"), "gi"); // Detect bad words
+  
+  const cleaned = cleanedChars.join("");
+  const pattern = new RegExp(filteredBadWords.join("|"), "gi");
   const matches = [...cleaned.matchAll(pattern)];
-  const result = message.split("");
+  const result = messageChars;
 
   for (const m of matches) {
     const start = m.index;

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Check if the page is embedded in other site.
@@ -14,18 +14,18 @@ const isEmbeddedInOtherWebsite = () => {
 
 if (isEmbeddedInOtherWebsite()) {
   document
-    .getElementById("flex-container")
-    .classList.add("embedded-in-other-website");
+    .getElementById('flex-container')
+    .classList.add('embedded-in-other-website');
   Array.from(
-    document.getElementsByClassName("if-embedded-in-other-website")
-  ).forEach((elem) => elem.classList.remove("hidden"));
+    document.getElementsByClassName('if-embedded-in-other-website')
+  ).forEach((elem) => elem.classList.remove('hidden'));
   Array.from(
-    document.querySelectorAll(".if-embedded-in-other-website button")
+    document.querySelectorAll('.if-embedded-in-other-website button')
   ).forEach((elem) =>
-    elem.addEventListener("click", () => {
+    elem.addEventListener('click', () => {
       Array.from(
-        document.getElementsByClassName("if-embedded-in-other-website")
-      ).forEach((elem) => elem.classList.add("hidden"));
+        document.getElementsByClassName('if-embedded-in-other-website')
+      ).forEach((elem) => elem.classList.add('hidden'));
     })
   );
 }

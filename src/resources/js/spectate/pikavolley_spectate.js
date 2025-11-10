@@ -9,12 +9,14 @@ import {
 import { Cloud, Wave } from '../offline_version_js/cloud_and_wave.js';
 import { PikaPhysics } from '../offline_version_js/physics.js';
 import { convert5bitNumberToUserInput } from '../utils/input_conversion.js';
+import { channel } from '../data_channel/data_channel.js';
 import {
-  noticeEndOfReplay,
   moveScrubberTo,
   showKeyboardInputs,
-} from './ui_replay.js';
-import { setTickerMaxFPSAccordingToNormalFPS } from './replay_player.js';
+} from './ui_spectate.js';
+import { setTickerMaxFPSAccordingToNormalFPS } from '../spectate/spectate_player.js';
+import { relayChannel } from './relay_channel.js';
+import { noticeEndOfSpectation } from './ui_spectate.js';
 
 /** @typedef GameState @type {function():void} */
 
@@ -221,13 +223,16 @@ export class PikachuVolleyballReplay extends PikachuVolleyball {
    */
   gameLoop() {
     if (this.replayFrameCounter >= this.inputs.length) {
-      noticeEndOfReplay();
       return;
     }
-
+    
     moveScrubberTo(this.replayFrameCounter);
 
     const usersInputNumber = this.inputs[this.replayFrameCounter];
+    if (usersInputNumber === -1) {
+      noticeEndOfSpectation();
+      return ;
+    }
     const player1Input = convert5bitNumberToUserInput(usersInputNumber >>> 5);
     const player2Input = convert5bitNumberToUserInput(
       usersInputNumber % (1 << 5)

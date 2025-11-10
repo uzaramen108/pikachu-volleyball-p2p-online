@@ -1,7 +1,7 @@
-"use strict";
-import { localStorageWrapper } from "./local_storage_wrapper";
-const THEME_COLOR_LIGHT = "#FFFFFF";
-const THEME_COLOR_DARK = "#202124";
+'use strict';
+import { localStorageWrapper } from './local_storage_wrapper';
+const THEME_COLOR_LIGHT = '#FFFFFF';
+const THEME_COLOR_DARK = '#202124';
 
 setUpDarkColorSchemeCheckbox();
 
@@ -10,35 +10,35 @@ setUpDarkColorSchemeCheckbox();
  */
 function setUpDarkColorSchemeCheckbox() {
   const darkColorSchemeCheckboxElements = Array.from(
-    document.getElementsByClassName("dark-color-scheme-checkbox")
+    document.getElementsByClassName('dark-color-scheme-checkbox')
   );
-  const colorScheme = localStorageWrapper.get("colorScheme");
-  if (colorScheme === "dark" || colorScheme === "light") {
+  const colorScheme = localStorageWrapper.get('colorScheme');
+  if (colorScheme === 'dark' || colorScheme === 'light') {
     darkColorSchemeCheckboxElements.forEach((elem) => {
       // @ts-ignore
-      elem.checked = colorScheme === "dark";
+      elem.checked = colorScheme === 'dark';
     });
     applyColorScheme(colorScheme);
   } else {
     const doesPreferDarkColorScheme = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      '(prefers-color-scheme: dark)'
     ).matches;
     // The following line is not for "document.documentElement.dataset.colorScheme = colorScheme;".
     // document.documentElement.dataset.colorScheme is not needed to be set for displaying dark color scheme,
     // since style.css has media query "@media (prefers-color-scheme: dark)" which deals with it without JavaScript.
     // The following line is for setting theme color and etc...
-    applyColorScheme(doesPreferDarkColorScheme ? "dark" : "light");
+    applyColorScheme(doesPreferDarkColorScheme ? 'dark' : 'light');
     darkColorSchemeCheckboxElements.forEach((elem) => {
       // @ts-ignore
       elem.checked = doesPreferDarkColorScheme;
     });
   }
   darkColorSchemeCheckboxElements.forEach((elem) => {
-    elem.addEventListener("change", () => {
+    elem.addEventListener('change', () => {
       // @ts-ignore
-      const colorScheme = elem.checked ? "dark" : "light";
+      const colorScheme = elem.checked ? 'dark' : 'light';
       applyColorScheme(colorScheme);
-      localStorageWrapper.set("colorScheme", colorScheme);
+      localStorageWrapper.set('colorScheme', colorScheme);
       // For syncing states of other checkbox elements
       darkColorSchemeCheckboxElements.forEach((element) => {
         if (element !== elem) {
@@ -63,8 +63,8 @@ function applyColorScheme(colorScheme) {
     // The line below is for the status bar color, which is set by theme-color
     // meta tag content, of PWA in Apple devices.
     themeColorMetaElement.setAttribute(
-      "content",
-      colorScheme === "dark" ? THEME_COLOR_DARK : THEME_COLOR_LIGHT
+      'content',
+      colorScheme === 'dark' ? THEME_COLOR_DARK : THEME_COLOR_LIGHT
     );
   }
 }

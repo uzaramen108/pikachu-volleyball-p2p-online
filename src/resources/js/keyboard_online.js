@@ -3,15 +3,15 @@
  *
  * The user inputs (inputQueue) are transmitted between peers.
  */
-"use strict";
-import { PikaKeyboard } from "./offline_version_js/keyboard.js";
-import { PikaUserInput } from "./offline_version_js/physics.js";
+'use strict';
+import { PikaKeyboard } from './offline_version_js/keyboard.js';
+import { PikaUserInput } from './offline_version_js/physics.js';
 import {
   channel,
   SYNC_DIVISOR,
   sendInputQueueToPeer,
-} from "./data_channel/data_channel.js";
-import { mod, isInModRange } from "./utils/mod.js";
+} from './data_channel/data_channel.js';
+import { mod, isInModRange } from './utils/mod.js';
 
 /** @constant @type {number} communicated input queue buffer length */
 export const bufferLength = 8;
@@ -186,18 +186,18 @@ class MyKeyboard {
 
 /** This MyKeyboard instance is used among the modules */
 export const myKeyboard = new MyKeyboard(
-  "KeyD",
-  "KeyG",
-  "KeyR",
-  "KeyV",
-  "KeyZ",
-  "KeyF",
-  "ArrowLeft",
-  "ArrowRight",
-  "ArrowUp",
-  "ArrowDown",
-  "Enter",
-  "ArrowDown"
+  'KeyD',
+  'KeyG',
+  'KeyR',
+  'KeyV',
+  'KeyZ',
+  'KeyF',
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowUp',
+  'ArrowDown',
+  'Enter',
+  'ArrowDown'
 );
 
 /**
@@ -228,7 +228,7 @@ export class OnlineKeyboard {
     if (this.isHistoryBufferFilled) {
       if (this.inputQueue.length > bufferLength) {
         if (this.inputQueue[bufferLength].syncCounter !== syncCounter) {
-          console.log("Something in OnlineKeyboard is wrong...");
+          console.log('Something in OnlineKeyboard is wrong...');
           return false;
         }
         return true;
@@ -252,7 +252,7 @@ export class OnlineKeyboard {
    */
   getInput(syncCounter) {
     if (this.inputQueue.length === 0) {
-      console.log("Something in getInput method is wrong...0");
+      console.log('Something in getInput method is wrong...0');
       return;
     }
     // Keep the history buffers (previous inputs) at the head of queue so that
@@ -265,12 +265,12 @@ export class OnlineKeyboard {
       if (this.inputQueue.length > bufferLength) {
         input = this.inputQueue[bufferLength];
         if (input.syncCounter !== syncCounter) {
-          console.log("Something in getInput method is wrong...1");
+          console.log('Something in getInput method is wrong...1');
           return;
         }
         this.inputQueue.shift();
       } else {
-        console.log("Something in getInput method is wrong...2");
+        console.log('Something in getInput method is wrong...2');
         return;
       }
     } else {
@@ -286,7 +286,7 @@ export class OnlineKeyboard {
       }
     }
     if (input === null) {
-      console.log("Something in getInput method is wrong...3");
+      console.log('Something in getInput method is wrong...3');
       return;
     }
     this.xDirection = input.xDirection;

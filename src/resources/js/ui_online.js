@@ -40,6 +40,8 @@ import {
 /** @type {number} maximum nickname length */
 export const MAX_NICKNAME_LENGTH = 8;
 
+const API_URL = "https://pikavolley-relay-server.onrender.com";
+
 /**
  * This is for to enable changing game options event before loading the game assets.
  * @type {{graphic: string, bgm: string, sfx: string, speed: string, winningScore: number}}
@@ -921,6 +923,27 @@ export function setUpUI() {
   exitBtn.addEventListener("click", () => {
     location.reload();
   });
+
+  const spectatorBtn = document.getElementById('show-list-for-spectator');
+  const spectatorBox = document.getElementById('spectator-room-list-box');
+  
+  if (spectatorBtn && spectatorBox) {
+    spectatorBtn.addEventListener('click', () => {
+      // 방 목록 상자 보이기
+      spectatorBox.classList.remove('hidden');
+      // 방 목록 불러오기
+      fetchSpectatorRoomList();
+    });
+  }
+
+  // [신규] '관전 취소' 버튼 리스너 추가
+  const cancelSpectateBtn = document.getElementById('cancel-spectate-btn');
+  if (cancelSpectateBtn && spectatorBox) {
+    cancelSpectateBtn.addEventListener('click', () => {
+      // 방 목록 상자 숨기기
+      spectatorBox.classList.add('hidden');
+    });
+  }
 }
 
 /**
@@ -1150,21 +1173,8 @@ export function printNotValidRoomIdMessage() {
   printLog(document.getElementById("not-valid-room-id-message").textContent);
 }
 
-export function printNoRoomMatchingMessage(roomId) {
-  //printLog(document.getElementById("no-room-matching-message").textContent);
-  
-  // [수정] 로그 메시지를 '연결 로그' 창에 띄우네
-  printLog("방이 꽉 찼습니다. 관전 모드로 자동 전환합니다...");
-  
-  // [수정] 1단계에서 만든 'spectate-link-container'에도 메시지를 띄워주지
-  const container = document.getElementById("spectate-link-container");
-  if (container) {
-    container.innerHTML = `<p style="margin: 0;">방이 꽉 찼습니다.<br>관전 모드로 자동 전환합니다...</p>`;
-    container.classList.remove("hidden");
-  }
-
-  // '자동 전환' 실행
-  showSpectateLink(roomId); 
+export function printNoRoomMatchingMessage() {
+  printLog(document.getElementById("no-room-matching-message").textContent);
 }
 
 export function printNoRoomMatchingMessageInQuickMatch() {
@@ -1174,36 +1184,14 @@ export function printNoRoomMatchingMessageInQuickMatch() {
   );
 }
 
-export function printSomeoneElseAlreadyJoinedRoomMessage(roomId) {
-  // [수정] 로그 메시지를 '연결 로그' 창에 띄우네
-  printLog("방이 꽉 찼습니다. 관전 모드로 자동 전환합니다...");
-  
-  // [수정] 1단계에서 만든 'spectate-link-container'에도 메시지를 띄워주지
-  const container = document.getElementById("spectate-link-container");
-  if (container) {
-    container.innerHTML = `<p style="margin: 0;">방이 꽉 찼습니다.<br>관전 모드로 자동 전환합니다...</p>`;
-    container.classList.remove("hidden");
-  }
-
-  // '자동 전환' 실행
-  showSpectateLink(roomId); 
+export function printSomeoneElseAlreadyJoinedRoomMessage() {
+  printLog(
+    document.getElementById("someone-else-already-joined-the-room").textContent
+  );
 }
 
-export function printConnectionFailed(roomId) {
-  // [수정] 로그 메시지를 '연결 로그' 창에 띄우네
-  printLog("P2P 연결에 실패했습니다. 관전 모드로 자동 전환합니다...");
-
-  // [수정] 1단계에서 만든 'spectate-link-container'에도 메시지를 띄워주지
-  const container = document.getElementById("spectate-link-container");
-  if (container) {
-    container.innerHTML = `<p style="margin: 0;">P2P 연결에 실패했습니다.<br>관전 모드로 자동 전환합니다...</p>`;
-    container.classList.remove("hidden");
-  }
-  
-  // '자동 전환' 실행 (roomId가 있을 때만)
-  if (roomId) {
-    showSpectateLink(roomId);
-  }
+export function printConnectionFailed() {
+  printLog(document.getElementById("connection-failed").textContent);
 }
 
 export function showGameCanvas() {
@@ -1659,7 +1647,7 @@ function setUpOptionsBtn() {
 /**
  * Attach event listeners to show dropdowns and submenus properly
  */
-export function setUpToShowDropdownsAndSubmenus() {
+function setUpToShowDropdownsAndSubmenus() {
   // hide dropdowns and submenus if the user clicks outside of these
   window.addEventListener("click", (event) => {
     // @ts-ignore
@@ -1934,19 +1922,84 @@ function hideSubmenus() {
 }
 
 /**
- * [수정] 관전 링크로 '자동 새로고침(redirect)'을 실행
- * @param {string} roomId
+ * 서버에서 /rooms API를 호출하여 방 목록을 가져옵니다.
  */
-function showSpectateLink(roomId) {
-  if (!roomId) {
-    return;
-  }
+async function fetchSpectatorRoomList() {
+  const contentDiv = document.getElementById('spectator-room-list-content');
+  if (!contentDiv) return;
 
-  // URL을 생성 (ko/index.html?spectate=...)
-  const spectateUrl = `./index.html?spectate=${roomId}`;
+  contentDiv.innerHTML = "<p>방 목록을 불러오는 중...</p>";
+
+  try {
+    const response = await fetch(`${API_URL}/rooms`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+
+    if (data.rooms && data.rooms.length > 0) {
+      // 방 목록 테이블 생성
+      buildRoomTable(contentDiv, data.rooms);
+    } else {
+      // 활성화된 방이 없음
+      contentDiv.innerHTML = "<p>사람이 없습니다</p>";
+    }
+  } catch (e) {
+    console.error("방 목록을 불러오는 데 실패했습니다:", e);
+    contentDiv.innerHTML = "<p>방 목록을 불러오는 데 실패했습니다. 다시 시도하세요.</p>";
+  }
+}
+
+/**
+ * 서버에서 받은 방 목록 데이터로 HTML 테이블을 생성합니다.
+ * @param {HTMLElement} contentDiv - 테이블을 삽입할 div
+ * @param {Array<{id: string, nicknames: string[]}>} rooms - 방 정보 배열
+ */
+function buildRoomTable(contentDiv, rooms) {
+  // 1. 테이블 기본 구조 생성
+  const table = document.createElement('table');
+  table.id = 'spectator-room-list-table';
   
-  // 1.5초 뒤에 리다이렉트 (로그를 읽을 시간을 줌)
-  setTimeout(() => {
-    window.location.href = spectateUrl;
-  }, 1500); // (1초에서 1.5초로 조금 늘렸네)
+  const thead = document.createElement('thead');
+  thead.innerHTML = `
+    <tr>
+      <th>Player 1 (방장)</th>
+      <th>Player 2 (참가자)</th>
+    </tr>
+  `;
+  
+  const tbody = document.createElement('tbody');
+
+  // 2. 각 방을 테이블 행(row)으로 추가
+  rooms.forEach(room => {
+    const tr = document.createElement('tr');
+    tr.className = 'spectator-room-row'; // 클릭 효과용 클래스
+    
+    // [핵심] 행(row)에 roomId 데이터를 저장
+    tr.dataset.roomId = room.id; 
+
+    // 닉네임이 없으면 '대기 중'으로 표시
+    const p1Nick = room.nicknames[0] || 'Player 1';
+    const p2Nick = room.nicknames[1] || '(대기 중...)';
+    
+    tr.innerHTML = `
+      <td>${p1Nick}</td>
+      <td>${p2Nick}</td>
+    `;
+
+    // 3. [핵심] 행(row)에 클릭 이벤트 추가
+    tr.addEventListener('click', () => {
+      // 클릭 시 해당 방의 ID를 가지고 관전 페이지로 이동
+      window.location.href = `spectator/index.html?room=${room.id}`;
+    });
+    
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  
+  // 4. 컨텐츠 Div에 테이블 삽입
+  contentDiv.innerHTML = ""; // "불러오는 중" 메시지 삭제
+  contentDiv.appendChild(table);
 }

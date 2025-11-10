@@ -133,7 +133,7 @@ class BadWordList {
    * @returns {boolean} Returns true if added successfully, false otherwise.
    */
   add(word) {
-    const cleanWord = word.toLowerCase().replace(/[^\p{L}]/gu, "");
+    const cleanWord = word.toLowerCase().replace(/[^\p{L}\p{Emoji}]/gu, ''); // Words or emojis will be saved
     if (!cleanWord || this.isFull()) {
       return false;
     }

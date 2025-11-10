@@ -1,19 +1,19 @@
-"use strict";
-import { settings } from "@pixi/settings";
-import { SCALE_MODES } from "@pixi/constants";
-import { Renderer, BatchRenderer, autoDetectRenderer } from "@pixi/core";
-import { Prepare } from "@pixi/prepare";
-import { Container } from "@pixi/display";
-import { Loader } from "@pixi/loaders";
-import { SpritesheetLoader } from "@pixi/spritesheet";
-import { Ticker } from "@pixi/ticker";
-import { CanvasRenderer } from "@pixi/canvas-renderer";
-import { CanvasSpriteRenderer } from "@pixi/canvas-sprite";
-import { CanvasPrepare } from "@pixi/canvas-prepare";
-import "@pixi/canvas-display";
-import { ASSETS_PATH } from "../offline_version_js/assets_path.js";
-import { PikachuVolleyballReplay } from "./pikavolley_replay.js";
-import { setGetSpeechBubbleNeeded, hideChat } from "../chat_display.js";
+'use strict';
+import { settings } from '@pixi/settings';
+import { SCALE_MODES } from '@pixi/constants';
+import { Renderer, BatchRenderer, autoDetectRenderer } from '@pixi/core';
+import { Prepare } from '@pixi/prepare';
+import { Container } from '@pixi/display';
+import { Loader } from '@pixi/loaders';
+import { SpritesheetLoader } from '@pixi/spritesheet';
+import { Ticker } from '@pixi/ticker';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
+import { CanvasPrepare } from '@pixi/canvas-prepare';
+import '@pixi/canvas-display';
+import { ASSETS_PATH } from '../offline_version_js/assets_path.js';
+import { PikachuVolleyballReplay } from './pikavolley_replay.js';
+import { setGetSpeechBubbleNeeded, hideChat } from '../chat_display.js';
 import {
   setMaxForScrubberRange,
   adjustPlayPauseBtnIcon,
@@ -23,21 +23,21 @@ import {
   hideNoticeEndOfReplay,
   noticeFileOpenError,
   adjustFPSInputValue,
-} from "./ui_replay.js";
-import "../../style.css";
-import { serialize } from "../utils/serialize.js";
-import { getHashCode } from "../utils/hash_code.js";
+} from './ui_replay.js';
+import '../../style.css';
+import { serialize } from '../utils/serialize.js';
+import { getHashCode } from '../utils/hash_code.js';
 
 class ReplayPlayer {
   constructor() {
     // Reference for how to use Renderer.registerPlugin:
     // https://github.com/pixijs/pixijs/blob/af3c0c6bb15aeb1049178c972e4a14bb4cabfce4/bundles/pixi.js/src/index.ts#L27-L34
-    Renderer.registerPlugin("prepare", Prepare);
-    Renderer.registerPlugin("batch", BatchRenderer);
+    Renderer.registerPlugin('prepare', Prepare);
+    Renderer.registerPlugin('batch', BatchRenderer);
     // Reference for how to use CanvasRenderer.registerPlugin:
     // https://github.com/pixijs/pixijs/blob/af3c0c6bb15aeb1049178c972e4a14bb4cabfce4/bundles/pixi.js-legacy/src/index.ts#L13-L19
-    CanvasRenderer.registerPlugin("prepare", CanvasPrepare);
-    CanvasRenderer.registerPlugin("sprite", CanvasSpriteRenderer);
+    CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
+    CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
     Loader.registerPlugin(SpritesheetLoader);
     settings.RESOLUTION = 2;
     settings.SCALE_MODE = SCALE_MODES.NEAREST;
@@ -66,7 +66,7 @@ class ReplayPlayer {
     TEXTURES.WITH_COMPUTER = TEXTURES.WITH_FRIEND;
 
     document
-      .querySelector("#game-canvas-container")
+      .querySelector('#game-canvas-container')
       .appendChild(this.renderer.view);
 
     this.renderer.render(this.stage); // To make the initial canvas painting stable in the Firefox browser.
@@ -101,7 +101,7 @@ class ReplayPlayer {
         const hash = pack.hash;
         pack.hash = 0;
         if (hash !== getHashCode(serialize(pack))) {
-          throw "Error: The file content is not matching the hash code";
+          throw 'Error: The file content is not matching the hash code';
         }
       } catch (err) {
         console.log(err);
@@ -227,14 +227,14 @@ export function setTickerMaxFPSAccordingToNormalFPS(normalFPS) {
  * @param {Loader} loader
  */
 function setUpLoaderProgressBar(loader) {
-  const loadingBox = document.getElementById("loading-box");
-  const progressBar = document.getElementById("progress-bar");
+  const loadingBox = document.getElementById('loading-box');
+  const progressBar = document.getElementById('progress-bar');
 
   loader.onProgress.add(() => {
     progressBar.style.width = `${loader.progress}%`;
   });
   loader.onComplete.add(() => {
-    loadingBox.classList.add("hidden");
+    loadingBox.classList.add('hidden');
   });
 }
 
@@ -251,13 +251,13 @@ function getTotalTimeDuration(pack) {
     if (options[1].speed) {
       let fpsFromNowOn = null;
       switch (options[1].speed) {
-        case "slow":
+        case 'slow':
           fpsFromNowOn = 20;
           break;
-        case "medium":
+        case 'medium':
           fpsFromNowOn = 25;
           break;
-        case "fast":
+        case 'fast':
           fpsFromNowOn = 30;
           break;
       }

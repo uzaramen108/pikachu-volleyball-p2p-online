@@ -6,8 +6,8 @@
  * The address of the original function is in the comment.
  * ex) FUN_00404770 means the function at the address 00404770 in the machine code.
  */
-"use strict";
-import { rand } from "./rand.js";
+'use strict';
+import { rand } from './rand.js';
 
 /**
  * Class represents a cloud

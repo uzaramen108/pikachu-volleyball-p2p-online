@@ -2,7 +2,7 @@ import { saveAs } from 'file-saver';
 import { serialize } from '../utils/serialize.js';
 import { getHashCode } from '../utils/hash_code.js';
 import { convertUserInputTo5bitNumber } from '../utils/input_conversion.js';
-import { getCommentText } from './ui_replay.js';
+import { relayChannel } from './relay_channel.js';
 
 /** @typedef {import('../offline_version_js/physics.js').PikaUserInput} PikaUserInput */
 /** @typedef {{speed: string, winningScore: number}} Options options communicated with the peer */
@@ -61,8 +61,10 @@ class ReplaySaver {
     const usersInputNumber =
       (convertUserInputTo5bitNumber(player1Input) << 5) +
       convertUserInputTo5bitNumber(player2Input);
-    this.inputs.push(usersInputNumber);
-    this.frameCounter++;
+    relayChannel.send({
+      type: "inputs",
+      value: usersInputNumber
+    });
   }
 
   /**
@@ -86,47 +88,7 @@ class ReplaySaver {
    * Save as a file
    */
   saveAsFile() {
-    const pack = {
-      version: 'p2p-online',
-      roomID: this.roomID,
-      nicknames: this.nicknames,
-      partialPublicIPs: this.partialPublicIPs,
-      chats: this.chats,
-      options: this.options,
-      inputs: this.inputs,
-      hash: 0,
-    };
-
-    // This is for making it annoying to modify/fabricate the replay file.
-    // I'm worried about fabricating the replay file and distributing it even if it is unlikely.
-    // I doubt about the effect of inserting a hash code. But It would be better than doing nothing.
-    const hash = getHashCode(serialize(pack));
-    pack.hash = hash;
-
-    const packWithComment = {
-      _comment: getCommentText(),
-      pack: pack,
-    };
-
-    const blob = new Blob([JSON.stringify(packWithComment)], {
-      type: 'text/plain;charset=utf-8',
-    });
-    const d = new Date();
-    // The code removing illegal characters in Windows by replace method is from:
-    // https://stackoverflow.com/a/42210346/8581025
-    const filename = `${d.getFullYear()}${('0' + (d.getMonth() + 1)).slice(
-      -2
-    )}${('0' + d.getDate()).slice(-2)}_${('0' + d.getHours()).slice(-2)}${(
-      '0' + d.getMinutes()
-    ).slice(-2)}_${this.nicknames[0]}_${this.partialPublicIPs[0].replace(
-      '.*.*',
-      ''
-    )}_vs_${this.nicknames[1]}_${this.partialPublicIPs[1].replace(
-      '.*.*',
-      ''
-    )}.txt`.replace(/[/\\?%*:|"<>]/g, '_');
-    saveAs(blob, filename, { autoBom: true });
   }
 }
 
-export const replaySaver = new ReplaySaver();
+export const InputSaverForSpectator = new ReplaySaver();

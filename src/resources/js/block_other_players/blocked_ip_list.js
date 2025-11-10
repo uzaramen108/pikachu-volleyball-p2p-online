@@ -9,7 +9,7 @@ class BlockedIP {
    * @param {number} [blockedTime]
    * @param {string} [remark]
    */
-  constructor(hashedIP, partialIP, blockedTime = Date.now(), remark = "") {
+  constructor(hashedIP, partialIP, blockedTime = Date.now(), remark = '') {
     this.hashedIP = hashedIP;
     this.partialIP = partialIP;
     this.blockedTime = blockedTime;

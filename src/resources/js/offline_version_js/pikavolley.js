@@ -1,11 +1,11 @@
 /**
  * The Controller part in MVC pattern
  */
-"use strict";
-import { GROUND_HALF_WIDTH, PikaPhysics } from "./physics.js";
-import { MenuView, GameView, FadeInOut, IntroView } from "./view.js";
-import { PikaKeyboard } from "./keyboard.js";
-import { PikaAudio } from "./audio.js";
+'use strict';
+import { GROUND_HALF_WIDTH, PikaPhysics } from './physics.js';
+import { MenuView, GameView, FadeInOut, IntroView } from './view.js';
+import { PikaKeyboard } from './keyboard.js';
+import { PikaAudio } from './audio.js';
 
 /** @typedef {import('@pixi/display').Container} Container */
 /** @typedef {import('@pixi/loaders').LoaderResource} LoaderResource */
@@ -40,13 +40,13 @@ export class PikachuVolleyball {
     this.audio = new PikaAudio(resources);
     this.physics = new PikaPhysics(true, true);
     this.keyboardArray = [
-      new PikaKeyboard("KeyD", "KeyG", "KeyR", "KeyV", "KeyZ", "KeyF"), // for player1
+      new PikaKeyboard('KeyD', 'KeyG', 'KeyR', 'KeyV', 'KeyZ', 'KeyF'), // for player1
       new PikaKeyboard( // for player2
-        "ArrowLeft",
-        "ArrowRight",
-        "ArrowUp",
-        "ArrowDown",
-        "Enter"
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'ArrowDown',
+        'Enter'
       ),
     ];
 

@@ -1,6 +1,6 @@
-"use strict";
-import { parseCandidate } from "./parse_candidate.js";
-import { rtcConfiguration } from "./rtc_configuration.js";
+'use strict';
+import { parseCandidate } from './parse_candidate.js';
+import { rtcConfiguration } from './rtc_configuration.js';
 
 let peerConnection = null;
 let dataChannel = null;
@@ -32,9 +32,9 @@ export async function testNetwork(
     }
     isinternalCallBackIfGotFinalCandidateCalled = true;
     if (gotFinalCandidate) {
-      console.log("Got final candidate!");
+      console.log('Got final candidate!');
     } else {
-      console.log("Timed out so just proceed as if got final candidate...");
+      console.log('Timed out so just proceed as if got final candidate...');
     }
     if (dataChannel) {
       dataChannel.close();
@@ -51,24 +51,24 @@ export async function testNetwork(
           break;
         }
       }
-      console.log(isBehindSymmetricNat ? "symmetric nat" : "normal nat");
+      console.log(isBehindSymmetricNat ? 'symmetric nat' : 'normal nat');
     }
     if (!gotSrflx && !isHostAddressPublicIP) {
-      console.log("did not get srflx candidate");
+      console.log('did not get srflx candidate');
       if (!gotHost) {
-        console.log("did not get host candidate");
+        console.log('did not get host candidate');
         callBackIfDidNotGetSrflxAndDidNotGetHost();
       } else if (isHostAddressObfuscated) {
-        console.log("host address is obfuscated");
+        console.log('host address is obfuscated');
         callBackIfDidNotGetSrflxAndHostAddressIsObfuscated();
       } else {
         console.log(
-          "host address is not obfuscated and is a private ip address"
+          'host address is not obfuscated and is a private ip address'
         );
         callBackIfDidNotGetSrflxAndHostAddressIsPrivateIPAddress();
       }
     } else if (isBehindSymmetricNat) {
-      console.log("behind symmetric nat");
+      console.log('behind symmetric nat');
       callBackIfBehindSymmetricNat();
     } else if (isHostAddressPublicIP || (gotSrflx && !isBehindSymmetricNat)) {
       console.log(
@@ -80,19 +80,19 @@ export async function testNetwork(
     return;
   };
 
-  peerConnection.addEventListener("icecandidate", (event) => {
+  peerConnection.addEventListener('icecandidate', (event) => {
     // ICE gathering completion is indicated when `event.candidate === null`:
     // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/icecandidate_event#indicating_that_ice_gathering_is_complete
     if (!event.candidate) {
       internalCallBackIfGotFinalCandidate(true);
       return;
     }
-    if (event.candidate.candidate === "") {
+    if (event.candidate.candidate === '') {
       // This if statement is for Firefox browser.
       return;
     }
     const cand = parseCandidate(event.candidate.candidate);
-    if (cand.type === "srflx") {
+    if (cand.type === 'srflx') {
       gotSrflx = true;
       // The original version in https://webrtchacks.com/symmetric-nat/
       // use cand.relatedPort instead of cand.ip here to differentiate
@@ -121,13 +121,13 @@ export async function testNetwork(
         candidates[cand.ip].push(cand.port);
       }
       setTimeout(internalCallBackIfGotFinalCandidate, 1500);
-    } else if (cand.type === "host") {
+    } else if (cand.type === 'host') {
       gotHost = true;
-      if (cand.ip.endsWith(".local")) {
+      if (cand.ip.endsWith('.local')) {
         isHostAddressObfuscated = true;
       } else {
         const privateIPReg = RegExp(
-          "(^127.)|(^10.)|(^172.1[6-9].)|(^172.2[0-9].)|(^172.3[0-1].)|(^192.168.)"
+          '(^127.)|(^10.)|(^172.1[6-9].)|(^172.2[0-9].)|(^172.3[0-1].)|(^192.168.)'
         );
         if (!privateIPReg.test(cand.ip)) {
           isHostAddressPublicIP = true;
@@ -135,10 +135,10 @@ export async function testNetwork(
       }
       setTimeout(internalCallBackIfGotFinalCandidate, 3000);
     }
-    console.log("Got candidate: ", event.candidate);
+    console.log('Got candidate: ', event.candidate);
   });
 
-  dataChannel = peerConnection.createDataChannel("test", {
+  dataChannel = peerConnection.createDataChannel('test', {
     ordered: true,
     maxRetransmits: 0,
   });

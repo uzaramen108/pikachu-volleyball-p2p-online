@@ -13,8 +13,8 @@
  */
 export function getIfLocalStorageIsAvailable() {
   try {
-    localStorage.setItem("__test", "test");
-    localStorage.removeItem("__test");
+    localStorage.setItem('__test', 'test');
+    localStorage.removeItem('__test');
     return true;
   } catch (e) {
     return false;

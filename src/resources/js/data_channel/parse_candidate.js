@@ -29,15 +29,15 @@
 export function parseCandidate(line) {
   let parts;
   // Parse both variants.
-  if (line.indexOf("a=candidate:") === 0) {
-    parts = line.substring(12).split(" ");
+  if (line.indexOf('a=candidate:') === 0) {
+    parts = line.substring(12).split(' ');
   } else {
-    parts = line.substring(10).split(" ");
+    parts = line.substring(10).split(' ');
   }
 
   const candidate = {
     foundation: parts[0],
-    component: { 1: "rtp", 2: "rtcp" }[parts[1]],
+    component: { 1: 'rtp', 2: 'rtcp' }[parts[1]],
     protocol: parts[2].toLowerCase(),
     priority: parseInt(parts[3], 10),
     ip: parts[4],
@@ -49,16 +49,16 @@ export function parseCandidate(line) {
 
   for (let i = 8; i < parts.length; i += 2) {
     switch (parts[i]) {
-      case "raddr":
+      case 'raddr':
         candidate.relatedAddress = parts[i + 1];
         break;
-      case "rport":
+      case 'rport':
         candidate.relatedPort = parseInt(parts[i + 1], 10);
         break;
-      case "tcptype":
+      case 'tcptype':
         candidate.tcpType = parts[i + 1];
         break;
-      case "ufrag":
+      case 'ufrag':
         candidate.ufrag = parts[i + 1]; // for backward compatibility.
         candidate.usernameFragment = parts[i + 1];
         break;
@@ -80,12 +80,12 @@ export function parsePublicIPFromCandidate(candidate) {
   // Parse the candidate
   const cand = parseCandidate(candidate);
   // Try to get and return the peer's public IP
-  if (cand.type === "srflx") {
+  if (cand.type === 'srflx') {
     return cand.ip;
-  } else if (cand.type === "host") {
-    if (!cand.ip.endsWith(".local")) {
+  } else if (cand.type === 'host') {
+    if (!cand.ip.endsWith('.local')) {
       const privateIPReg = RegExp(
-        "(^127.)|(^10.)|(^172.1[6-9].)|(^172.2[0-9].)|(^172.3[0-1].)|(^192.168.)"
+        '(^127.)|(^10.)|(^172.1[6-9].)|(^172.2[0-9].)|(^172.3[0-1].)|(^192.168.)'
       );
       if (!privateIPReg.test(cand.ip)) {
         return cand.ip;
@@ -100,7 +100,7 @@ export function parsePublicIPFromCandidate(candidate) {
  * @param {string} ip ip address, for example, 123.222.111.123
  */
 export function getPartialIP(ip) {
-  const index = ip.indexOf(".", ip.indexOf(".") + 1);
+  const index = ip.indexOf('.', ip.indexOf('.') + 1);
   if (index === -1) {
     // if ip is IPv6 address
     return ip.slice(0, 7);

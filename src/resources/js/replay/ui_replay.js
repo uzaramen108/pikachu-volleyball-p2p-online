@@ -1,39 +1,39 @@
-import { replayPlayer } from "./replay_player.js";
-import { enableChat, hideChat } from "../chat_display";
-import "../../style.css";
+import { replayPlayer } from './replay_player.js';
+import { enableChat, hideChat } from '../chat_display.js';
+import '../../style.css';
 
 /** @typedef {import('../offline_version_js/physics.js').PikaUserInput} PikaUserInput */
 
 let pausedByBtn = false;
 
-const scrubberRangeInput = document.getElementById("scrubber-range-input");
-const playPauseBtn = document.getElementById("play-pause-btn");
-const seekBackward1Btn = document.getElementById("seek-backward-1");
-const seekForward1Btn = document.getElementById("seek-forward-1");
-const seekBackward3Btn = document.getElementById("seek-backward-3");
-const seekForward3Btn = document.getElementById("seek-forward-3");
-const speedBtn5FPS = document.getElementById("speed-btn-5-fps");
-const speedBtnHalfTimes = document.getElementById("speed-btn-half-times");
-const speedBtn1Times = document.getElementById("speed-btn-1-times");
-const speedBtn2Times = document.getElementById("speed-btn-2-times");
+const scrubberRangeInput = document.getElementById('scrubber-range-input');
+const playPauseBtn = document.getElementById('play-pause-btn');
+const seekBackward1Btn = document.getElementById('seek-backward-1');
+const seekForward1Btn = document.getElementById('seek-forward-1');
+const seekBackward3Btn = document.getElementById('seek-backward-3');
+const seekForward3Btn = document.getElementById('seek-forward-3');
+const speedBtn5FPS = document.getElementById('speed-btn-5-fps');
+const speedBtnHalfTimes = document.getElementById('speed-btn-half-times');
+const speedBtn1Times = document.getElementById('speed-btn-1-times');
+const speedBtn2Times = document.getElementById('speed-btn-2-times');
 
 export function setUpUI() {
   disableReplayScrubberAndBtns();
 
   // File input code is from: https://developer.mozilla.org/en-US/docs/Web/API/File/Using_files_from_web_applications
-  const fileInputElement = document.getElementById("file-input");
-  fileInputElement.addEventListener("change", (e) => {
-    document.getElementById("loading-box").classList.remove("hidden");
-    dropbox.classList.add("hidden");
+  const fileInputElement = document.getElementById('file-input');
+  fileInputElement.addEventListener('change', (e) => {
+    document.getElementById('loading-box').classList.remove('hidden');
+    dropbox.classList.add('hidden');
     // @ts-ignore
     handleFiles(e.target.files);
   });
 
   // Dropbox code is from: https://developer.mozilla.org/en-US/docs/Web/API/File/Using_files_from_web_applications
-  const dropbox = document.getElementById("dropbox");
-  dropbox.addEventListener("dragenter", dragenter, false);
-  dropbox.addEventListener("dragover", dragover, false);
-  dropbox.addEventListener("drop", drop, false);
+  const dropbox = document.getElementById('dropbox');
+  dropbox.addEventListener('dragenter', dragenter, false);
+  dropbox.addEventListener('dragover', dragover, false);
+  dropbox.addEventListener('drop', drop, false);
   function dragenter(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -49,8 +49,8 @@ export function setUpUI() {
     const dt = e.dataTransfer;
     const files = dt.files;
 
-    document.getElementById("loading-box").classList.remove("hidden");
-    dropbox.classList.add("hidden");
+    document.getElementById('loading-box').classList.remove('hidden');
+    dropbox.classList.add('hidden');
 
     handleFiles(files);
   }
@@ -58,38 +58,38 @@ export function setUpUI() {
     replayPlayer.readFile(files[0]);
   }
 
-  scrubberRangeInput.addEventListener("touchstart", () => {
+  scrubberRangeInput.addEventListener('touchstart', () => {
     if (replayPlayer.ticker.started) {
       replayPlayer.ticker.stop();
       replayPlayer.stopBGM();
     }
   });
-  scrubberRangeInput.addEventListener("mousedown", () => {
+  scrubberRangeInput.addEventListener('mousedown', () => {
     if (replayPlayer.ticker.started) {
       replayPlayer.ticker.stop();
       replayPlayer.stopBGM();
     }
   });
-  scrubberRangeInput.addEventListener("touchend", () => {
+  scrubberRangeInput.addEventListener('touchend', () => {
     if (!pausedByBtn && !replayPlayer.ticker.started) {
       replayPlayer.ticker.start();
       replayPlayer.playBGMProperly();
     }
   });
-  scrubberRangeInput.addEventListener("mouseup", () => {
+  scrubberRangeInput.addEventListener('mouseup', () => {
     if (!pausedByBtn && !replayPlayer.ticker.started) {
       replayPlayer.ticker.start();
       replayPlayer.playBGMProperly();
     }
   });
-  scrubberRangeInput.addEventListener("input", (e) => {
+  scrubberRangeInput.addEventListener('input', (e) => {
     // @ts-ignore
     replayPlayer.seekFrame(Number(e.currentTarget.value));
   });
 
   // @ts-ignore
   playPauseBtn.disabled = true;
-  playPauseBtn.addEventListener("click", () => {
+  playPauseBtn.addEventListener('click', () => {
     if (replayPlayer.ticker.started) {
       replayPlayer.ticker.stop();
       replayPlayer.stopBGM();
@@ -103,28 +103,28 @@ export function setUpUI() {
     }
   });
 
-  seekBackward1Btn.addEventListener("click", () => {
+  seekBackward1Btn.addEventListener('click', () => {
     replayPlayer.seekRelativeTime(-1);
     if (!pausedByBtn && !replayPlayer.ticker.started) {
       replayPlayer.ticker.start();
       replayPlayer.playBGMProperly();
     }
   });
-  seekForward1Btn.addEventListener("click", () => {
+  seekForward1Btn.addEventListener('click', () => {
     replayPlayer.seekRelativeTime(1);
     if (!pausedByBtn && !replayPlayer.ticker.started) {
       replayPlayer.ticker.start();
       replayPlayer.playBGMProperly();
     }
   });
-  seekBackward3Btn.addEventListener("click", () => {
+  seekBackward3Btn.addEventListener('click', () => {
     replayPlayer.seekRelativeTime(-3);
     if (!pausedByBtn && !replayPlayer.ticker.started) {
       replayPlayer.ticker.start();
       replayPlayer.playBGMProperly();
     }
   });
-  seekForward3Btn.addEventListener("click", () => {
+  seekForward3Btn.addEventListener('click', () => {
     replayPlayer.seekRelativeTime(3);
     if (!pausedByBtn && !replayPlayer.ticker.started) {
       replayPlayer.ticker.start();
@@ -132,26 +132,26 @@ export function setUpUI() {
     }
   });
 
-  speedBtn5FPS.addEventListener("click", (e) => {
+  speedBtn5FPS.addEventListener('click', (e) => {
     processSelected(e);
     replayPlayer.adjustPlaybackSpeedFPS(5);
   });
-  speedBtnHalfTimes.addEventListener("click", (e) => {
+  speedBtnHalfTimes.addEventListener('click', (e) => {
     processSelected(e);
     replayPlayer.adjustPlaybackSpeedTimes(0.5);
   });
-  speedBtn1Times.addEventListener("click", (e) => {
+  speedBtn1Times.addEventListener('click', (e) => {
     processSelected(e);
     replayPlayer.adjustPlaybackSpeedTimes(1);
   });
-  speedBtn2Times.addEventListener("click", (e) => {
+  speedBtn2Times.addEventListener('click', (e) => {
     processSelected(e);
     replayPlayer.adjustPlaybackSpeedTimes(2);
   });
   function processSelected(e) {
     unselectSpeedBtns();
     // @ts-ignore
-    e.currentTarget.classList.add("selected");
+    e.currentTarget.classList.add('selected');
   }
   function unselectSpeedBtns() {
     for (const btn of [
@@ -160,12 +160,12 @@ export function setUpUI() {
       speedBtn1Times,
       speedBtn2Times,
     ]) {
-      btn.classList.remove("selected");
+      btn.classList.remove('selected');
     }
   }
 
-  const fpsInput = document.getElementById("fps-input");
-  fpsInput.addEventListener("change", (e) => {
+  const fpsInput = document.getElementById('fps-input');
+  fpsInput.addEventListener('change', (e) => {
     // @ts-ignore
     let value = e.target.value;
     if (value < 0) {
@@ -178,34 +178,34 @@ export function setUpUI() {
   });
 
   const noticeBoxEndOfReplayOKBtn = document.getElementById(
-    "notice-end-of-replay-ok-btn"
+    'notice-end-of-replay-ok-btn'
   );
-  noticeBoxEndOfReplayOKBtn.addEventListener("click", () => {
+  noticeBoxEndOfReplayOKBtn.addEventListener('click', () => {
     location.reload();
   });
 
   const noticeBoxFileErrorOKBtn = document.getElementById(
-    "notice-file-open-error-ok-btn"
+    'notice-file-open-error-ok-btn'
   );
-  noticeBoxFileErrorOKBtn.addEventListener("click", () => {
+  noticeBoxFileErrorOKBtn.addEventListener('click', () => {
     location.reload();
   });
 
-  const keyboardContainer = document.getElementById("keyboard-container");
+  const keyboardContainer = document.getElementById('keyboard-container');
   const showKeyboardCheckbox = document.getElementById(
-    "show-keyboard-checkbox"
+    'show-keyboard-checkbox'
   );
-  showKeyboardCheckbox.addEventListener("change", () => {
+  showKeyboardCheckbox.addEventListener('change', () => {
     // @ts-ignore
     if (showKeyboardCheckbox.checked) {
-      keyboardContainer.classList.remove("hidden");
+      keyboardContainer.classList.remove('hidden');
     } else {
-      keyboardContainer.classList.add("hidden");
+      keyboardContainer.classList.add('hidden');
     }
   });
 
-  const showChatCheckbox = document.getElementById("show-chat-checkbox");
-  showChatCheckbox.addEventListener("change", () => {
+  const showChatCheckbox = document.getElementById('show-chat-checkbox');
+  showChatCheckbox.addEventListener('change', () => {
     // @ts-ignore
     if (showChatCheckbox.checked) {
       enableChat(true);
@@ -216,37 +216,37 @@ export function setUpUI() {
   });
 
   const showNicknamesCheckbox = document.getElementById(
-    "show-nicknames-checkbox"
+    'show-nicknames-checkbox'
   );
-  const player1NicknameElem = document.getElementById("player1-nickname");
-  const player2NicknameElem = document.getElementById("player2-nickname");
-  showNicknamesCheckbox.addEventListener("change", () => {
+  const player1NicknameElem = document.getElementById('player1-nickname');
+  const player2NicknameElem = document.getElementById('player2-nickname');
+  showNicknamesCheckbox.addEventListener('change', () => {
     // @ts-ignore
     if (showNicknamesCheckbox.checked) {
-      player1NicknameElem.classList.remove("hidden");
-      player2NicknameElem.classList.remove("hidden");
+      player1NicknameElem.classList.remove('hidden');
+      player2NicknameElem.classList.remove('hidden');
     } else {
-      player1NicknameElem.classList.add("hidden");
-      player2NicknameElem.classList.add("hidden");
+      player1NicknameElem.classList.add('hidden');
+      player2NicknameElem.classList.add('hidden');
     }
   });
 
-  const showIPsCheckbox = document.getElementById("show-ip-addresses-checkbox");
-  const player1IPElem = document.getElementById("player1-partial-ip");
-  const player2IPElem = document.getElementById("player2-partial-ip");
-  showIPsCheckbox.addEventListener("change", () => {
+  const showIPsCheckbox = document.getElementById('show-ip-addresses-checkbox');
+  const player1IPElem = document.getElementById('player1-partial-ip');
+  const player2IPElem = document.getElementById('player2-partial-ip');
+  showIPsCheckbox.addEventListener('change', () => {
     // @ts-ignore
     if (showIPsCheckbox.checked) {
-      player1IPElem.classList.remove("hidden");
-      player2IPElem.classList.remove("hidden");
+      player1IPElem.classList.remove('hidden');
+      player2IPElem.classList.remove('hidden');
     } else {
-      player1IPElem.classList.add("hidden");
-      player2IPElem.classList.add("hidden");
+      player1IPElem.classList.add('hidden');
+      player2IPElem.classList.add('hidden');
     }
   });
 
-  const turnOnBGMCheckbox = document.getElementById("turn-on-bgm-checkbox");
-  turnOnBGMCheckbox.addEventListener("change", () => {
+  const turnOnBGMCheckbox = document.getElementById('turn-on-bgm-checkbox');
+  turnOnBGMCheckbox.addEventListener('change', () => {
     if (replayPlayer.pikaVolley === null) {
       return;
     }
@@ -258,8 +258,8 @@ export function setUpUI() {
     }
   });
 
-  const turnOnSFXCheckbox = document.getElementById("turn-on-sfx-checkbox");
-  turnOnSFXCheckbox.addEventListener("change", () => {
+  const turnOnSFXCheckbox = document.getElementById('turn-on-sfx-checkbox');
+  turnOnSFXCheckbox.addEventListener('change', () => {
     if (replayPlayer.pikaVolley === null) {
       return;
     }
@@ -272,32 +272,32 @@ export function setUpUI() {
   });
 
   const graphicSharpCheckbox = document.getElementById(
-    "graphic-sharp-checkbox"
+    'graphic-sharp-checkbox'
   );
-  graphicSharpCheckbox.addEventListener("change", () => {
+  graphicSharpCheckbox.addEventListener('change', () => {
     if (replayPlayer.pikaVolley === null) {
       return;
     }
     // @ts-ignore
     if (graphicSharpCheckbox.checked) {
       document
-        .querySelector("#game-canvas-container>canvas")
-        .classList.remove("graphic-soft");
+        .querySelector('#game-canvas-container>canvas')
+        .classList.remove('graphic-soft');
     } else {
       document
-        .querySelector("#game-canvas-container>canvas")
-        .classList.add("graphic-soft");
+        .querySelector('#game-canvas-container>canvas')
+        .classList.add('graphic-soft');
     }
   });
 
-  window.addEventListener("keydown", (event) => {
-    if (event.code === "Space") {
+  window.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
       event.preventDefault();
       playPauseBtn.click();
-    } else if (event.code === "ArrowLeft") {
+    } else if (event.code === 'ArrowLeft') {
       event.preventDefault();
       seekBackward3Btn.click();
-    } else if (event.code === "ArrowRight") {
+    } else if (event.code === 'ArrowRight') {
       event.preventDefault();
       seekForward3Btn.click();
     }
@@ -305,40 +305,40 @@ export function setUpUI() {
 }
 
 export function adjustFPSInputValue() {
-  const fpsInput = document.getElementById("fps-input");
+  const fpsInput = document.getElementById('fps-input');
   // @ts-ignore
   fpsInput.value = replayPlayer.ticker.maxFPS;
 }
 
 export function adjustPlayPauseBtnIcon() {
-  const playPauseBtn = document.getElementById("play-pause-btn");
+  const playPauseBtn = document.getElementById('play-pause-btn');
   if (replayPlayer.ticker.started) {
     playPauseBtn.textContent =
-      document.getElementById("pause-mark").textContent;
+      document.getElementById('pause-mark').textContent;
   } else {
-    playPauseBtn.textContent = document.getElementById("play-mark").textContent;
+    playPauseBtn.textContent = document.getElementById('play-mark').textContent;
   }
 }
 
 export function noticeEndOfReplay() {
-  const noticeBoxEndOfReplay = document.getElementById("notice-end-of-replay");
-  noticeBoxEndOfReplay.classList.remove("hidden");
+  const noticeBoxEndOfReplay = document.getElementById('notice-end-of-replay');
+  noticeBoxEndOfReplay.classList.remove('hidden');
 }
 
 export function hideNoticeEndOfReplay() {
-  const noticeBoxEndOfReplay = document.getElementById("notice-end-of-replay");
-  noticeBoxEndOfReplay.classList.add("hidden");
+  const noticeBoxEndOfReplay = document.getElementById('notice-end-of-replay');
+  noticeBoxEndOfReplay.classList.add('hidden');
 }
 
 export function noticeFileOpenError() {
   const noticeBoxFileOpenError = document.getElementById(
-    "notice-file-open-error"
+    'notice-file-open-error'
   );
-  noticeBoxFileOpenError.classList.remove("hidden");
+  noticeBoxFileOpenError.classList.remove('hidden');
 }
 
 export function getCommentText() {
-  return document.getElementById("replay-viewer-at").textContent;
+  return document.getElementById('replay-viewer-at').textContent;
 }
 
 export function setMaxForScrubberRange(max) {
@@ -356,7 +356,7 @@ export function moveScrubberTo(value) {
  * @param {number} timeCurrent unit: second
  */
 export function showTimeCurrent(timeCurrent) {
-  document.getElementById("time-current").textContent =
+  document.getElementById('time-current').textContent =
     getTimeText(timeCurrent);
 }
 
@@ -365,7 +365,7 @@ export function showTimeCurrent(timeCurrent) {
  * @param {number} timeDuration unit: second
  */
 export function showTotalTimeDuration(timeDuration) {
-  document.getElementById("time-duration").textContent =
+  document.getElementById('time-duration').textContent =
     getTimeText(timeDuration);
 }
 
@@ -375,24 +375,24 @@ export function showTotalTimeDuration(timeDuration) {
  * @param {PikaUserInput} player2Input
  */
 export function showKeyboardInputs(player1Input, player2Input) {
-  const zKey = document.getElementById("z-key");
-  const rKey = document.getElementById("r-key");
-  const vKey = document.getElementById("v-key");
-  const dKey = document.getElementById("d-key");
-  const gKey = document.getElementById("g-key");
+  const zKey = document.getElementById('z-key');
+  const rKey = document.getElementById('r-key');
+  const vKey = document.getElementById('v-key');
+  const dKey = document.getElementById('d-key');
+  const gKey = document.getElementById('g-key');
 
-  const enterKey = document.getElementById("enter-key");
-  const upKey = document.getElementById("up-key");
-  const downKey = document.getElementById("down-key");
-  const leftKey = document.getElementById("left-key");
-  const rightKey = document.getElementById("right-key");
+  const enterKey = document.getElementById('enter-key');
+  const upKey = document.getElementById('up-key');
+  const downKey = document.getElementById('down-key');
+  const leftKey = document.getElementById('left-key');
+  const rightKey = document.getElementById('right-key');
 
   function pressKeyElm(keyElm) {
-    keyElm.classList.add("pressed");
+    keyElm.classList.add('pressed');
   }
 
   function unpressKeyElm(keyElm) {
-    keyElm.classList.remove("pressed");
+    keyElm.classList.remove('pressed');
   }
 
   switch (player1Input.xDirection) {
@@ -526,10 +526,10 @@ function getTimeText(time) {
   const hours = Math.floor(Math.floor(time / 60) / 60);
 
   if (hours > 0) {
-    return `${String(hours)}:${("0" + minutes).slice(-2)}:${(
-      "0" + seconds
+    return `${String(hours)}:${('0' + minutes).slice(-2)}:${(
+      '0' + seconds
     ).slice(-2)}`;
   } else {
-    return `${String(minutes)}:${("0" + seconds).slice(-2)}`;
+    return `${String(minutes)}:${('0' + seconds).slice(-2)}`;
   }
 }

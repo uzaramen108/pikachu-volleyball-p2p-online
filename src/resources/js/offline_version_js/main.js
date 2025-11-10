@@ -27,31 +27,31 @@
  *  - "assets_path.js": For the assets (image files, sound files) locations.
  *  - "ui.js": For the user interface (menu bar, buttons etc.) of the html page.
  */
-"use strict";
-import { settings } from "@pixi/settings";
-import { SCALE_MODES } from "@pixi/constants";
-import { Renderer, BatchRenderer, autoDetectRenderer } from "@pixi/core";
-import { Prepare } from "@pixi/prepare";
-import { Container } from "@pixi/display";
-import { Loader } from "@pixi/loaders";
-import { SpritesheetLoader } from "@pixi/spritesheet";
-import { Ticker } from "@pixi/ticker";
-import { CanvasRenderer } from "@pixi/canvas-renderer";
-import { CanvasSpriteRenderer } from "@pixi/canvas-sprite";
-import { CanvasPrepare } from "@pixi/canvas-prepare";
-import "@pixi/canvas-display";
-import { PikachuVolleyball } from "./pikavolley.js";
-import { ASSETS_PATH } from "./assets_path.js";
-import { setUpUI } from "./ui.js";
+'use strict';
+import { settings } from '@pixi/settings';
+import { SCALE_MODES } from '@pixi/constants';
+import { Renderer, BatchRenderer, autoDetectRenderer } from '@pixi/core';
+import { Prepare } from '@pixi/prepare';
+import { Container } from '@pixi/display';
+import { Loader } from '@pixi/loaders';
+import { SpritesheetLoader } from '@pixi/spritesheet';
+import { Ticker } from '@pixi/ticker';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
+import { CanvasPrepare } from '@pixi/canvas-prepare';
+import '@pixi/canvas-display';
+import { PikachuVolleyball } from './pikavolley.js';
+import { ASSETS_PATH } from './assets_path.js';
+import { setUpUI } from './ui.js';
 
 // Reference for how to use Renderer.registerPlugin:
 // https://github.com/pixijs/pixijs/blob/af3c0c6bb15aeb1049178c972e4a14bb4cabfce4/bundles/pixi.js/src/index.ts#L27-L34
-Renderer.registerPlugin("prepare", Prepare);
-Renderer.registerPlugin("batch", BatchRenderer);
+Renderer.registerPlugin('prepare', Prepare);
+Renderer.registerPlugin('batch', BatchRenderer);
 // Reference for how to use CanvasRenderer.registerPlugin:
 // https://github.com/pixijs/pixijs/blob/af3c0c6bb15aeb1049178c972e4a14bb4cabfce4/bundles/pixi.js-legacy/src/index.ts#L13-L19
-CanvasRenderer.registerPlugin("prepare", CanvasPrepare);
-CanvasRenderer.registerPlugin("sprite", CanvasSpriteRenderer);
+CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
+CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 Loader.registerPlugin(SpritesheetLoader);
 
 // Set settings.RESOLUTION to 2 instead of 1 to make the game screen do not look
@@ -79,8 +79,8 @@ const stage = new Container();
 const ticker = new Ticker();
 const loader = new Loader();
 
-renderer.view.setAttribute("id", "game-canvas");
-document.getElementById("game-canvas-container").appendChild(renderer.view);
+renderer.view.setAttribute('id', 'game-canvas');
+document.getElementById('game-canvas-container').appendChild(renderer.view);
 renderer.render(stage); // To make the initial canvas painting stable in the Firefox browser.
 
 loader.add(ASSETS_PATH.SPRITE_SHEET);
@@ -94,48 +94,48 @@ setUpInitialUI();
  * Set up the initial UI.
  */
 function setUpInitialUI() {
-  const loadingBox = document.getElementById("loading-box");
-  const progressBar = document.getElementById("progress-bar");
+  const loadingBox = document.getElementById('loading-box');
+  const progressBar = document.getElementById('progress-bar');
   loader.onProgress.add(() => {
     progressBar.style.width = `${loader.progress}%`;
   });
   loader.onComplete.add(() => {
-    loadingBox.classList.add("hidden");
+    loadingBox.classList.add('hidden');
   });
 
-  const aboutBox = document.getElementById("about-box");
-  const aboutBtn = document.getElementById("about-btn");
-  const closeAboutBtn = document.getElementById("close-about-btn");
-  const gameDropdownBtn = document.getElementById("game-dropdown-btn");
-  const optionsDropdownBtn = document.getElementById("options-dropdown-btn");
+  const aboutBox = document.getElementById('about-box');
+  const aboutBtn = document.getElementById('about-btn');
+  const closeAboutBtn = document.getElementById('close-about-btn');
+  const gameDropdownBtn = document.getElementById('game-dropdown-btn');
+  const optionsDropdownBtn = document.getElementById('options-dropdown-btn');
   // @ts-ignore
   gameDropdownBtn.disabled = true;
   // @ts-ignore
   optionsDropdownBtn.disabled = true;
   const closeAboutBox = () => {
-    if (!aboutBox.classList.contains("hidden")) {
-      aboutBox.classList.add("hidden");
+    if (!aboutBox.classList.contains('hidden')) {
+      aboutBox.classList.add('hidden');
       // @ts-ignore
       aboutBtn.disabled = true;
     }
-    aboutBtn.getElementsByClassName("text-play")[0].classList.add("hidden");
-    aboutBtn.getElementsByClassName("text-about")[0].classList.remove("hidden");
-    aboutBtn.classList.remove("glow");
+    aboutBtn.getElementsByClassName('text-play')[0].classList.add('hidden');
+    aboutBtn.getElementsByClassName('text-about')[0].classList.remove('hidden');
+    aboutBtn.classList.remove('glow');
     closeAboutBtn
-      .getElementsByClassName("text-play")[0]
-      .classList.add("hidden");
+      .getElementsByClassName('text-play')[0]
+      .classList.add('hidden');
     closeAboutBtn
-      .getElementsByClassName("text-close")[0]
-      .classList.remove("hidden");
-    closeAboutBtn.classList.remove("glow");
+      .getElementsByClassName('text-close')[0]
+      .classList.remove('hidden');
+    closeAboutBtn.classList.remove('glow');
 
     loader.load(setup); // setup is called after loader finishes loading
-    loadingBox.classList.remove("hidden");
-    aboutBtn.removeEventListener("click", closeAboutBox);
-    closeAboutBtn.removeEventListener("click", closeAboutBox);
+    loadingBox.classList.remove('hidden');
+    aboutBtn.removeEventListener('click', closeAboutBox);
+    closeAboutBtn.removeEventListener('click', closeAboutBox);
   };
-  aboutBtn.addEventListener("click", closeAboutBox);
-  closeAboutBtn.addEventListener("click", closeAboutBox);
+  aboutBtn.addEventListener('click', closeAboutBox);
+  closeAboutBtn.addEventListener('click', closeAboutBox);
 }
 
 /**

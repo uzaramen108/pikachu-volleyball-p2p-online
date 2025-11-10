@@ -200,15 +200,11 @@
             >
           </div>
           <div class="margin-top-a-little">
-            <input
-              id="basic-chat-filter-checkbox"
-              type="checkbox"
-              checked="checked"
-            />
+            <input id="basic-chat-filter-checkbox" type="checkbox" checked="checked"/>
             <label for="basic-chat-filter-checkbox"
-              >Use the default profanity filter (pre-defined banned words will
-              be censored in chat with your partner. Additional banned words can
-              be added under the Quick Match block list.)</label
+              >Use the default profanity filter (pre-defined banned words will be censored
+               in chat with your partner. Additional banned words can be added under the 
+               Quick Match block list.)</label
             >
           </div>
         </div>
@@ -316,6 +312,7 @@
         <button type="button" id="with-your-friend-btn">
           With one of your friends
         </button>
+        <button type="button" id="show-list-for-spectator">watching other's</button>
       </div>
       <div id="blocked-ip-addresses-table-container" class="margin-top">
         <details>
@@ -348,10 +345,7 @@
       <div id="blocked-bad-words-table-container" class="margin-top">
         <details>
           <summary>
-            List of additional Banned words (<span
-              id="number-of-bad-words-addresses"
-              >0</span
-            >/50)
+            List of additional Banned words (<span id="number-of-bad-words-addresses">0</span>/50)
           </summary>
           <table class="blocked-bad-words-table">
             <thead>
@@ -360,7 +354,8 @@
                 <th>Creation date</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              </tbody>
             <tfoot>
               <tr>
                 <td>
@@ -368,15 +363,11 @@
                     type="text"
                     id="new-custom-word-input"
                     placeholder="Banned words to add"
-                    style="width: 95%"
+                    style="width: 95%;"
                   />
                 </td>
                 <td>
-                  <button
-                    type="button"
-                    id="add-custom-word-btn"
-                    style="width: 100%"
-                  >
+                  <button type="button" id="add-custom-word-btn" style="width: 100%;">
                     Registration
                   </button>
                 </td>
@@ -722,6 +713,22 @@
         </button>
       </div>
     </div>
+    <div
+      id="spectator-room-list-box"
+      class="fade-in-box notice fixed hidden"
+    >
+      <p class="thick">List of players at now</p>
+      <div id="spectator-room-list-content">
+        <p>Loading list of rooms...</p>
+      </div>
+      <button
+        type="button"
+        id="cancel-spectate-btn"
+        class="btn-in-box large"
+      >
+        <span class="no-wrap">spectation</span> cancel
+      </button>
+    </div>
     <div id="flex-container" class="hidden">
       <div id="menu-bar">
         <div class="btn-container left">
@@ -926,14 +933,6 @@
             current side of play<br />
             <span class="no-wrap">"2人でぴかちゅ~"</span>(lower) - Swap the side
             of play
-          </div>
-        </div>
-        <div class.="fade-in-box peer-loading black" id="spectator-status-box" style="display: none;">
-          <div>
-            <p id="spectator-status-text">관전 서버에 접속 중...</p>
-            <div id="progress-bar-border">
-              <div id="progress-bar" style="width: 0%"></div>
-            </div>
           </div>
         </div>
         <div class="fade-in-box peer-loading black" id="peer-loading-box">

@@ -1,8 +1,8 @@
 /**
  * This module takes charge of the user input via keyboard
  */
-"use strict";
-import { PikaUserInput } from "./physics.js";
+'use strict';
+import { PikaUserInput } from './physics.js';
 
 /**
  * Class representing a keyboard used to control a player
@@ -156,16 +156,16 @@ class Key {
     // a key was downed and upped before keyup event listener were attached,
     // I think the value of this.isDown would be true (and the value of this.isUp would be false)
     // for a while before the user press this key again.
-    window.addEventListener("keyup", this.upListener);
-    window.addEventListener("keydown", this.downListener);
+    window.addEventListener('keyup', this.upListener);
+    window.addEventListener('keydown', this.downListener);
   }
 
   /**
    * Unsubscribe event listeners
    */
   unsubscribe() {
-    window.removeEventListener("keydown", this.downListener);
-    window.removeEventListener("keyup", this.upListener);
+    window.removeEventListener('keydown', this.downListener);
+    window.removeEventListener('keyup', this.upListener);
     this.isDown = false;
     this.isUp = true;
   }

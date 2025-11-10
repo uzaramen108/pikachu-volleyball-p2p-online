@@ -26,8 +26,8 @@
  *  Player height: 64 = 0x40
  *
  */
-"use strict";
-import { rand } from "./rand.js";
+'use strict';
+import { rand } from './rand.js';
 
 /** @constant @type {number} ground width */
 const GROUND_WIDTH = 432;
