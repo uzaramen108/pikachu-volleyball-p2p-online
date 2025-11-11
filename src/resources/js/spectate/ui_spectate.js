@@ -42,19 +42,9 @@ function adjustAssetsPath() {
   }
 }
 
-// --- 4. 'ui_replay.js'의 메인 UI 설정 함수 ---
-// [수정] 'replayPlayer' -> 'spectatorPlayer'로 모두 변경
-// [수정] '파일/드롭박스' 관련 리스너 모두 삭제
-// [수정] 모든 getElementById에 null 체크 추가
 function setUpUI() {
-  disableReplayScrubberAndBtns(); // 시작 시 모든 버튼 비활성화
-
-  // 'spectator_player.js'의 로더와 로딩 UI 연결
+  disableReplayScrubberAndBtns();
   setUpLoaderProgressBar(spectatorPlayer.loader);
-
-  // [삭제] 파일/드롭박스 관련 리스너 모두 삭제
-
-  // --- 탐색 막대 (Scrubber) ---
   const scrubberRangeInput = document.getElementById('scrubber-range-input');
   if (scrubberRangeInput) {
     scrubberRangeInput.addEventListener('touchstart', () => {
@@ -104,7 +94,6 @@ function setUpUI() {
     });
   }
 
-  // --- 탐색 버튼 (Seek) ---
   const seekBackward1Btn = document.getElementById('seek-backward-1');
   if (seekBackward1Btn) {
     seekBackward1Btn.addEventListener('click', () => {
@@ -199,6 +188,13 @@ function setUpUI() {
       window.location.href = '../';
     });
   }
+
+  const noticeBoxEndOfSpectationNOBtn = document.getElementById('notice-end-of-spectation-no-btn');
+  if (noticeBoxEndOfSpectationNOBtn) {
+    noticeBoxEndOfSpectationNOBtn.addEventListener('click', () => {
+      hideNoticeEndOfSpectation();
+    });
+  }
   
   const noticeBoxFileErrorOKBtn = document.getElementById('notice-file-open-error-ok-btn');
   if (noticeBoxFileErrorOKBtn) {
@@ -269,7 +265,9 @@ function setUpUI() {
   const turnOnBGMCheckbox = document.getElementById('turn-on-bgm-checkbox');
   if (turnOnBGMCheckbox) {
     turnOnBGMCheckbox.addEventListener('change', () => {
-      if (spectatorPlayer.pikaVolley === null) return;
+      if (spectatorPlayer.pikaVolley === null) {
+        //return;
+      }
       // @ts-ignore
       if (turnOnBGMCheckbox.checked) {
         spectatorPlayer.pikaVolley.audio.turnBGMVolume(true);
@@ -282,7 +280,9 @@ function setUpUI() {
   const turnOnSFXCheckbox = document.getElementById('turn-on-sfx-checkbox');
   if (turnOnSFXCheckbox) {
     turnOnSFXCheckbox.addEventListener('change', () => {
-      if (spectatorPlayer.pikaVolley === null) return;
+      if (spectatorPlayer.pikaVolley === null) {
+        //return;
+      }
       // @ts-ignore
       if (turnOnSFXCheckbox.checked) {
         spectatorPlayer.pikaVolley.audio.turnSFXVolume(true);
@@ -295,9 +295,13 @@ function setUpUI() {
   const graphicSharpCheckbox = document.getElementById('graphic-sharp-checkbox');
   if (graphicSharpCheckbox) {
     graphicSharpCheckbox.addEventListener('change', () => {
-      if (spectatorPlayer.pikaVolley === null) return;
+      if (spectatorPlayer.pikaVolley === null) {
+        //return;
+      }
       const canvas = document.querySelector('#game-canvas-container>canvas');
-      if (!canvas) return;
+      if (!canvas) {
+        return;
+      }
       
       // @ts-ignore
       if (graphicSharpCheckbox.checked) {
@@ -334,7 +338,9 @@ function setUpUI() {
 export function setUpLoaderProgressBar(loader) {
   const loadingBox = document.getElementById('loading-box');
   const progressBar = document.getElementById('progress-bar');
-  if (!loadingBox || !progressBar) return;
+  if (!loadingBox || !progressBar) {
+        return;
+      }
 
   loader.onProgress.add(() => {
     progressBar.style.width = `${loader.progress}%`;
@@ -352,11 +358,15 @@ export function adjustFPSInputValue() {
 
 export function adjustPlayPauseBtnIcon() {
   const playPauseBtn = document.getElementById('play-pause-btn');
-  if (!playPauseBtn || !spectatorPlayer.ticker) return;
+  if (!playPauseBtn || !spectatorPlayer.ticker) {
+    return;
+  }
   
   const pauseMark = document.getElementById('pause-mark');
   const playMark = document.getElementById('play-mark');
-  if (!pauseMark || !playMark) return;
+  if (!pauseMark || !playMark)  {
+    return;
+  }
 
   if (spectatorPlayer.ticker.started) {
     playPauseBtn.textContent = pauseMark.textContent;
@@ -367,19 +377,25 @@ export function adjustPlayPauseBtnIcon() {
 
 export function noticeEndOfSpectation() {
   const noticeBoxEndOfReplay = document.getElementById('notice-end-of-spectation');
-  if (noticeBoxEndOfReplay) noticeBoxEndOfReplay.classList.remove('hidden');
+  if (noticeBoxEndOfReplay) {
+    noticeBoxEndOfReplay.classList.remove('hidden');
+  }
 }
 
 export function hideNoticeEndOfSpectation() {
   const noticeBoxEndOfReplay = document.getElementById('notice-end-of-spectation');
-  if (noticeBoxEndOfReplay) noticeBoxEndOfReplay.classList.add('hidden');
+  if (noticeBoxEndOfReplay) {
+    noticeBoxEndOfReplay.classList.add('hidden');
+  }
 }
 
 export function noticeFileOpenError() {
   const noticeBoxFileOpenError = document.getElementById(
     'notice-file-open-error'
   );
-  if (noticeBoxFileOpenError) noticeBoxFileOpenError.classList.remove('hidden');
+  if (noticeBoxFileOpenError) {
+    noticeBoxFileOpenError.classList.remove('hidden');
+  }
 }
 
 export function getCommentText() {
@@ -389,14 +405,18 @@ export function getCommentText() {
 
 export function setMaxForScrubberRange(max) {
   const scrubberRangeInput = document.getElementById('scrubber-range-input');
-  // @ts-ignore
-  if (scrubberRangeInput) scrubberRangeInput.max = max;
+  if (scrubberRangeInput) {
+    // @ts-ignore
+    scrubberRangeInput.max = max;
+  }
 }
 
 export function moveScrubberTo(value) {
   const scrubberRangeInput = document.getElementById('scrubber-range-input');
-  // @ts-ignore
-  if (scrubberRangeInput) scrubberRangeInput.value = value;
+  if (scrubberRangeInput) {
+    // @ts-ignore
+    scrubberRangeInput.value = value;
+  }
 }
 
 /**
@@ -404,7 +424,9 @@ export function moveScrubberTo(value) {
  */
 export function showTimeCurrent(timeCurrent) {
   const elem = document.getElementById('time-current');
-  if (elem) elem.textContent = getTimeText(timeCurrent);
+  if (elem) {
+    elem.textContent = getTimeText(timeCurrent);
+  }
 }
 
 /**
@@ -475,7 +497,6 @@ export function showKeyboardInputs(player1Input, player2Input) {
 }
 
 export function enableReplayScrubberAndBtns() {
-  // (학생이 제공한 코드를 기반으로, null 체크 추가)
   const scrubberRangeInput = document.getElementById('scrubber-range-input');
   const playPauseBtn = document.getElementById('play-pause-btn');
   const seekBackward1Btn = document.getElementById('seek-backward-1');
@@ -510,7 +531,6 @@ export function enableReplayScrubberAndBtns() {
 }
 
 function disableReplayScrubberAndBtns() {
-  // (학생이 제공한 코드를 기반으로, null 체크 추가)
   const scrubberRangeInput = document.getElementById('scrubber-range-input');
   const playPauseBtn = document.getElementById('play-pause-btn');
   const seekBackward1Btn = document.getElementById('seek-backward-1');

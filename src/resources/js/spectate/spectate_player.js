@@ -1,8 +1,4 @@
-// [ spectator_player.js (신규 파일) ]
-// 'replay_player.js'를 기반으로 개조
-
 'use strict';
-// --- PixiJS 모듈 (replay_player.js와 동일) ---
 import { settings } from '@pixi/settings';
 import { SCALE_MODES } from '@pixi/constants';
 import { Renderer, BatchRenderer, autoDetectRenderer } from '@pixi/core';
@@ -15,13 +11,10 @@ import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 import { CanvasPrepare } from '@pixi/canvas-prepare';
 import '@pixi/canvas-display';
-
-// --- 게임 모듈 ---
 import { ASSETS_PATH } from '../offline_version_js/assets_path.js';
-// [중요] 'pikavolley_replay.js'가 아닌, 학생이 새로 만든 'pikavolley_spectate.js'를 import
 import { PikachuVolleyballReplay } from './pikavolley_spectate.js'; 
 import { setGetSpeechBubbleNeeded, hideChat } from '../chat_display.js';
-// [중요] 'ui_spectate.js'에서 모든 UI 헬퍼 함수들을 import
+
 import {
   setMaxForScrubberRange,
   adjustPlayPauseBtnIcon,
@@ -35,12 +28,10 @@ import {
 } from './ui_spectate.js'; 
 import '../../style.css';
 
-// [신규] 서버 주소
 const SERVER_URL = "wss://pikavolley-relay-server.onrender.com";
 
 class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
   constructor() {
-    // --- PixiJS 설정 (replay_player.js와 100% 동일) ---
     Renderer.registerPlugin('prepare', Prepare);
     Renderer.registerPlugin('batch', BatchRenderer);
     CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
@@ -62,15 +53,16 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
     });
     this.stage = new Container();
     this.loader = new Loader();
-    this.pikaVolley = null; // 실제 게임 로직 객체
+    this.pikaVolley = null;
     this.playBackSpeedTimes = 1;
     this.playBackSpeedFPS = null;
-    this.ws = null; // [신규] WebSocket 객체
+    this.ws = null; // WebSocket
   }
   
   startSpectating(roomId) {
-    if (this.ws) { return; } // 이미 연결됨
-    
+    if (this.ws) { 
+      return;
+    }    
     const connectUrl = `${SERVER_URL}/${roomId}`;
     this.ws = new WebSocket(connectUrl);
 
@@ -83,13 +75,10 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
         const data = JSON.parse(event.data);
         
         if (data.type === "replay_pack") {
-          // 'replay_pack'을 받으면 게임 엔진 초기화
           this.initialize(data.pack); 
         } else if (data.type === "live_input") {
-          // 'live_input'을 받으면 엔진에 데이터 주입
           this.pushInput(data.value);
         } else if (data.type === "live_options") {
-          // [신규] 실시간 옵션 변경 수신
           this.pushOptions(data.value);
         }
       } catch (e) {
@@ -98,19 +87,14 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
     };
     
     this.ws.onclose = () => { 
-      console.log("WebSocket 연결 종료"); 
-      // (여기에 "연결 종료" UI 처리 로직 추가 가능)
+      console.log("WebSocket 연결 종료");
     };
     this.ws.onerror = (err) => { 
       console.error("WebSocket 오류:", err);
-      // (여기에 "연결 오류" UI 처리 로직 추가 가능)
     };
   }
 
-
-  // [신규] 2. 게임 엔진 초기화 함수 ('readFile'의 onload 로직을 가져옴)
   initialize(pack) {
-    // ... (캔버스 추가, Ticker 설정 동일) ...
     document.querySelector('#game-canvas-container').appendChild(this.renderer.view);
     this.renderer.render(this.stage);
     
@@ -123,7 +107,6 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
       this.pikaVolley.gameLoop();
     });
 
-    // ... (에셋 로더 실행 동일) ...
     this.loader.add(ASSETS_PATH.SPRITE_SHEET);
     for (const prop in ASSETS_PATH.SOUNDS) {
       this.loader.add(ASSETS_PATH.SOUNDS[prop]);
@@ -131,7 +114,6 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
 
     this.loader.load(() => {
         this.pikaVolley = new PikachuVolleyballReplay(
-          // ... (PikaVolleyReplay 생성자 동일) ...
           this.stage,
           this.loader.resources,
           pack.roomID,
@@ -153,18 +135,16 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
 
         this.ticker.start();
         adjustPlayPauseBtnIcon();
-        
-        // ... (UI 활성화 및 숨기기 로직 동일) ...
-        const playPauseBtn = document.getElementById('play-pause-btn');
-        const scrubberRangeInput = document.getElementById('scrubber-range-input');
-        // @ts-ignore
-        if (playPauseBtn) playPauseBtn.disabled = false;
-        // @ts-ignore
-        if (scrubberRangeInput) scrubberRangeInput.disabled = false;
+        enableReplayScrubberAndBtns();
+
         const loadingUI = document.getElementById('spectator-loading');
-        if (loadingUI) loadingUI.style.display = 'none';
+        if (loadingUI) {
+          loadingUI.style.display = 'none';
+        }
         const controlsUI = document.getElementById('replay-controls');
-        if (controlsUI) controlsUI.style.display = 'block';
+        if (controlsUI) {
+          controlsUI.style.display = 'block';
+        }
     });
   }
   

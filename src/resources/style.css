@@ -1069,3 +1069,27 @@ input.toggle-switch:checked + label::before {
   left: var(--toggle-ball-left);
   content: '\263E';
 }
+.spectator-room-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
+  background-color: #002e4d;
+}
+.spectator-room-row:hover {
+  background-color: #0078ab;
+}
+/*
+#spectator-room-list-content {
+  height: 150%;
+}
+*/
+#spectator-room-list-table {
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+#spectator-room-list-table td {
+  text-align: center;
+  width: 200px;
+}
+#spectator-room-list-table tr {
+  height: 40px;
+}

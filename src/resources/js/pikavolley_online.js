@@ -190,17 +190,6 @@ export class PikachuVolleyballOnline extends PikachuVolleyball {
     this.physics.player1.isComputer = false;
     this.physics.player2.isComputer = false;
     this.state();
-    if (this.gameEnded && !this.hasSentGameOverSignal) {
-      // P1 (방장)만 종료 신호를 전송
-      if (channel.amICreatedRoom) {
-        console.log("경기가 종료되었습니다. 서버에 'End of Stream' 신호를 전송합니다.");
-        relayChannel.send({
-          type: "inputs",
-          value: -1 // Value that norices the game is over
-        });
-      }
-      this.hasSentGameOverSignal = true;
-    }
 
     // window.setTimeout(callback, 0) is used because it puts
     // the callback to the message queue of Javascript runtime event loop,

@@ -71,6 +71,7 @@ import {
   sendWithFriendSuccessMessageToServer,
 } from '../quick_match/quick_match.js';
 import { replaySaver } from '../replay/replay_saver.js';
+import { relayChannel } from '../spectate/relay_channel.js';
 
 /** @typedef {{speed: string, winningScore: number}} Options */
 
@@ -942,6 +943,10 @@ function dataChannelOpened() {
  */
 function dataChannelClosed() {
   console.log('data channel closed');
+  relayChannel.send({
+    type: "inputs",
+    value: -1 // Value that norices the game is over
+  });
   channel.isOpen = false;
   cleanUpFirestoreRelevants(); // 플레이어와의 접속 종료 시 id 파기
   noticeDisconnected();

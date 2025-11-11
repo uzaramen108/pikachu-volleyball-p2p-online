@@ -1930,7 +1930,7 @@ async function fetchSpectatorRoomList() {
 
   contentDiv.innerHTML = "<p>방 목록을 불러오는 중...</p>";
 
-  try {
+  //try {
     const response = await fetch(`${API_URL}/rooms`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -1944,16 +1944,16 @@ async function fetchSpectatorRoomList() {
       // 활성화된 방이 없음
       contentDiv.innerHTML = "<p>사람이 없습니다</p>";
     }
-  } catch (e) {
-    console.error("방 목록을 불러오는 데 실패했습니다:", e);
-    contentDiv.innerHTML = "<p>방 목록을 불러오는 데 실패했습니다. 다시 시도하세요.</p>";
-  }
+  //} catch (e) {
+    //console.error("방 목록을 불러오는 데 실패했습니다:", e);
+    //contentDiv.innerHTML = "<p>방 목록을 불러오는 데 실패했습니다. 다시 시도하세요.</p>";
+  //}
 }
 
 /**
  * 서버에서 받은 방 목록 데이터로 HTML 테이블을 생성합니다.
  * @param {HTMLElement} contentDiv - 테이블을 삽입할 div
- * @param {Array<{id: string, nicknames: string[]}>} rooms - 방 정보 배열
+ * @param {Array<{id: string, nicknames: string[], ips: string[]}>} rooms - 방 정보 배열
  */
 function buildRoomTable(contentDiv, rooms) {
   // 1. 테이블 기본 구조 생성
@@ -1963,8 +1963,8 @@ function buildRoomTable(contentDiv, rooms) {
   const thead = document.createElement('thead');
   thead.innerHTML = `
     <tr>
-      <th>Player 1 (방장)</th>
-      <th>Player 2 (참가자)</th>
+      <th>Player 1</th>
+      <th>Player 2</th>
     </tr>
   `;
   
@@ -1981,10 +1981,12 @@ function buildRoomTable(contentDiv, rooms) {
     // 닉네임이 없으면 '대기 중'으로 표시
     const p1Nick = room.nicknames[0] || 'Player 1';
     const p2Nick = room.nicknames[1] || '(대기 중...)';
+    const p1IP = room.ips[0] || '*.*';
+    const p2IP = room.ips[1] || '*.*';
     
     tr.innerHTML = `
-      <td>${p1Nick}</td>
-      <td>${p2Nick}</td>
+      <td>${p1Nick}(${p1IP})</td>
+      <td>${p2Nick}(${p2IP})</td>
     `;
 
     // 3. [핵심] 행(row)에 클릭 이벤트 추가

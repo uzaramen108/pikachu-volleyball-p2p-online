@@ -229,10 +229,11 @@ export class PikachuVolleyballReplay extends PikachuVolleyball {
     moveScrubberTo(this.replayFrameCounter);
 
     const usersInputNumber = this.inputs[this.replayFrameCounter];
-    if (usersInputNumber === -1) {
+    if (usersInputNumber == -1) {
       noticeEndOfSpectation();
       return ;
     }
+    console.log(usersInputNumber);
     const player1Input = convert5bitNumberToUserInput(usersInputNumber >>> 5);
     const player2Input = convert5bitNumberToUserInput(
       usersInputNumber % (1 << 5)

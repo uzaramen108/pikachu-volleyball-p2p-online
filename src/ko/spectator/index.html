@@ -43,13 +43,15 @@
         </div>
         <div class="fade-in-box notice hidden" id="notice-end-of-spectation">
           <p>경기가 끝났습니다.</p>
-          <button
-            type="button"
-            id="notice-end-of-spectation-ok-btn"
-            class="btn-in-box"
-          >
-            알겠어요
-          </button>
+          <div id="notice-end-of-spectation-button-box">
+            <button
+              type="button"
+              id="notice-end-of-spectation-ok-btn"
+              class="btn-in-box"
+            >
+              메인 화면으로
+            </button>
+          </div>
         </div>
         <div class="fade-in-box notice hidden" id="notice-file-open-error">
           <p>
@@ -189,7 +191,7 @@
             IP
           </label>
           <label>
-            <input id="turn-on-bgm-checkbox" type="checkbox" checked />
+            <input id="turn-on-bgm-checkbox" type="checkbox"/>
             배경음악
           </label>
           <label>
