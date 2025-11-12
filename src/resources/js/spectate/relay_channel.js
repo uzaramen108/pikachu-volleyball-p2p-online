@@ -1,3 +1,17 @@
+/**
+ * src/resources/js/spectate/relay_channel.js
+ * This file is the 'core communication hub' of the spectate system.
+ *
+ * It defines the 'RelayChannel' class using the 'Singleton' pattern,
+ * and manages a single WebSocket connection to `pikavolley-relay-server` (https://github.com/uzaramen108/pikavolley-relay-server).
+ *
+ * This `relayChannel` object is shared across the project.
+ * - The 'player' (Host) 'broadcasts' data such as `inputs` and `chat` to the server by calling `send()` through this object.
+ * - The 'spectator' (Spectator) 'receives' `replay_pack` and `live_input` data from the server through this object's `onMessage()`.
+ *
+ * @see {@link https://github.com/uzaramen108/pikavolley-relay-server}
+ */
+
 const SERVER_URL = "wss://pikavolley-relay-server.onrender.com"; 
 
 class RelayChannel {
@@ -9,7 +23,7 @@ class RelayChannel {
   }
 
   /**
-   * Connect to relay server, https://github.com/uzaramen108/pikavolley-relay-server
+   * Connect to relay server
    * @param {string} roomId
    * @param {() => void} onOpenCallback
    */

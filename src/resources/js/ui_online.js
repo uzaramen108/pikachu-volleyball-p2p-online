@@ -1921,7 +1921,7 @@ function hideSubmenus() {
   }
 }
 
-let spectatorFetchInterval = null;
+let spectatorFetchInterval = null; // To refresh the room search
 
 /**
  * Bring list of room by calling /rooms on server
