@@ -121,11 +121,20 @@ channel.callbackAfterDataChannelOpened = () => {
 
   relayChannel.connect(playerRoomId, () => {
       console.log("Relay server connected for BROADCASTING.");
-      relayChannel.send({
-        type: "identify_player",
-        nicknames: [channel.myNickname, channel.peerNickname],
-        partialPublicIPs: [channel.myPartialPublicIP, channel.peerPartialPublicIP]
-      });
+      if (channel.amICreatedRoom) {
+        relayChannel.send({
+          type: "identify_player",
+          nicknames: [channel.myNickname, channel.peerNickname],
+          partialPublicIPs: [channel.myPartialPublicIP, channel.peerPartialPublicIP]
+        });
+      } else {
+        relayChannel.send({
+          type: "identify_player",
+          nicknames: [channel.peerNickname, channel.myNickname],
+          partialPublicIPs: [channel.peerPartialPublicIP, channel.myPartialPublicIP]
+        });
+      }
+      
       console.log("Sent 'identify_player' to server.");
       const SERVER_URL = "wss://pikavolley-relay-server.onrender.com"; 
       const testSocket = new WebSocket(`${SERVER_URL}/${playerRoomId}`);

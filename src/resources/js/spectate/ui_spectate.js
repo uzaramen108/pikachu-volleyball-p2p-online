@@ -1,48 +1,11 @@
-// [ ui_spectate.js (최종 통합본) ]
-// 'main_replay.js'와 'ui_replay.js'의 기능을 통합 및 개조
-
-import { spectatorPlayer } from './spectate_player.js'; // [중요] 새로 만들 '엔진'
-import { ASSETS_PATH } from '../offline_version_js/assets_path.js';
-import { enableChat, hideChat, setGetSpeechBubbleNeeded } from '../chat_display.js';
+import { spectatorPlayer } from './spectate_player.js';
+import { enableChat, hideChat } from '../chat_display.js';
 import { PikaUserInput } from '../offline_version_js/physics.js';
 import '../../style.css';
 
-// --- 전역 변수 ---
 let pausedByBtn = false;
 
-// --- 1. 'main_replay.js'의 로직 (즉시 실행) ---
-adjustAssetsPath();
-setUpUI();
-
-// --- 2. [핵심] URL에서 Room ID를 읽어 관전 시작 (즉시 실행) ---
-(() => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const roomId = urlParams.get('room'); // ?room=ID_123
-
-  if (roomId) {
-    // Room ID가 있으면, '엔진'에게 관전 시작을 명령
-    spectatorPlayer.startSpectating(roomId);
-  } else {
-    // Room ID가 없으면, 로딩 UI에 에러 메시지 표시
-    const loadingUI = document.getElementById('spectator-loading');
-    if (loadingUI) {
-      loadingUI.innerHTML = "<p>오류: 관전할 방 ID가 지정되지 않았습니다.</p>";
-    }
-  }
-})();
-
-// --- 3. 'main_replay.js'의 헬퍼 함수 ---
-/**
- * 'ko/spectator/' 폴더 기준에 맞게 에셋 경로를 수정
- */
-function adjustAssetsPath() {
-  ASSETS_PATH.SPRITE_SHEET = '../' + ASSETS_PATH.SPRITE_SHEET;
-  for (const prop in ASSETS_PATH.SOUNDS) {
-    ASSETS_PATH.SOUNDS[prop] = '../' + ASSETS_PATH.SOUNDS[prop];
-  }
-}
-
-function setUpUI() {
+export function setUpUI() {
   disableReplayScrubberAndBtns();
   setUpLoaderProgressBar(spectatorPlayer.loader);
   const scrubberRangeInput = document.getElementById('scrubber-range-input');
@@ -77,7 +40,7 @@ function setUpUI() {
     });
   }
 
-  // --- 재생/일시정지 ---
+  // --- play/pause ---
   const playPauseBtn = document.getElementById('play-pause-btn');
   if (playPauseBtn) {
     playPauseBtn.addEventListener('click', () => {
@@ -135,7 +98,7 @@ function setUpUI() {
     });
   }
 
-  // --- 속도 조절 버튼 (Speed) ---
+  // --- Speed ---
   const speedBtn5FPS = document.getElementById('speed-btn-5-fps');
   const speedBtnHalfTimes = document.getElementById('speed-btn-half-times');
   const speedBtn1Times = document.getElementById('speed-btn-1-times');
@@ -169,7 +132,7 @@ function setUpUI() {
     spectatorPlayer.adjustPlaybackSpeedTimes(2);
   });
   
-  // --- FPS 입력 ---
+  // --- FPS ---
   const fpsInput = document.getElementById('fps-input');
   if (fpsInput) {
     fpsInput.addEventListener('change', (e) => {
@@ -203,7 +166,7 @@ function setUpUI() {
     });
   }
 
-  // --- 체크박스들 (Checkboxes) ---
+  // --- Checkboxes ---
   const keyboardContainer = document.getElementById('keyboard-container');
   const showKeyboardCheckbox = document.getElementById('show-keyboard-checkbox');
   if (showKeyboardCheckbox) {
@@ -237,11 +200,19 @@ function setUpUI() {
     showNicknamesCheckbox.addEventListener('change', () => {
       // @ts-ignore
       if (showNicknamesCheckbox.checked) {
-        if (player1NicknameElem) player1NicknameElem.classList.remove('hidden');
-        if (player2NicknameElem) player2NicknameElem.classList.remove('hidden');
+        if (player1NicknameElem) {
+          player1NicknameElem.classList.remove('hidden');
+        }
+        if (player2NicknameElem) {
+          player2NicknameElem.classList.remove('hidden');
+        }
       } else {
-        if (player1NicknameElem) player1NicknameElem.classList.add('hidden');
-        if (player2NicknameElem) player2NicknameElem.classList.add('hidden');
+        if (player1NicknameElem) {
+          player1NicknameElem.classList.add('hidden');
+        }
+        if (player2NicknameElem) {
+          player2NicknameElem.classList.add('hidden');
+        }
       }
     });
   }
@@ -253,11 +224,19 @@ function setUpUI() {
     showIPsCheckbox.addEventListener('change', () => {
       // @ts-ignore
       if (showIPsCheckbox.checked) {
-        if (player1IPElem) player1IPElem.classList.remove('hidden');
-        if (player2IPElem) player2IPElem.classList.remove('hidden');
+        if (player1IPElem) {
+          player1IPElem.classList.remove('hidden');
+        }
+        if (player2IPElem) {
+          player2IPElem.classList.remove('hidden');
+        }
       } else {
-        if (player1IPElem) player1IPElem.classList.add('hidden');
-        if (player2IPElem) player2IPElem.classList.add('hidden');
+        if (player1IPElem) {
+          player1IPElem.classList.add('hidden');
+        }
+        if (player2IPElem) {
+          player2IPElem.classList.add('hidden');
+        }
       }
     });
   }
@@ -312,7 +291,7 @@ function setUpUI() {
     });
   }
 
-  // --- 키보드 단축키 ---
+  // --- Keyboards ---
   window.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
       event.preventDefault();
@@ -326,10 +305,6 @@ function setUpUI() {
     }
   });
 }
-
-
-// --- 5. 헬퍼 함수 라이브러리 (모두 export) ---
-// (spectator_player.js와 pikavolley_replay.js가 이 함수들을 import하여 사용)
 
 /**
  * Set up the loader progress bar.
@@ -443,7 +418,6 @@ export function showTotalTimeDuration(timeDuration) {
  * @param {PikaUserInput} player2Input
  */
 export function showKeyboardInputs(player1Input, player2Input) {
-  // (학생이 제공한 코드를 기반으로, null 체크 추가)
   const zKey = document.getElementById('z-key');
   const rKey = document.getElementById('r-key');
   const vKey = document.getElementById('v-key');
@@ -562,6 +536,11 @@ function disableReplayScrubberAndBtns() {
   if (speedBtn1Times) speedBtn1Times.disabled = true;
   // @ts-ignore
   if (speedBtn2Times) speedBtn2Times.disabled = true;
+}
+
+export function hideWaitingPeerAssetsStartBox() {
+  const StartBox = document.getElementById("start-box");
+  StartBox.classList.add("hidden");
 }
 
 /**

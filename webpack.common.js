@@ -16,7 +16,7 @@ module.exports = {
     is_embedded_in_other_website:
       './src/resources/js/offline_version_js/utils/is_embedded_in_other_website.js',
     spectator:
-      './src/resources/js/spectate/ui_spectate.js',
+      './src/resources/js/spectate/main_spectate.js',
   },
   output: {
     filename: '[name].[contenthash].js',

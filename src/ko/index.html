@@ -732,14 +732,19 @@
     >
       <p class="thick">현재 방송 중인 방 목록</p>
       <div id="spectator-room-list-content">
-        <p>방 목록을 불러오는 중...</p>
+        <div id="Loading-room-list">
+          <p>관전 가능한 방 검색 중...</p>
+        </div>
+        <div id="No-room-list" class="hidden">
+          <p>관전 가능한 방이 없습니다.</p>
+        </div>
       </div>
       <button
         type="button"
         id="cancel-spectate-btn"
         class="btn-in-box large"
       >
-        <span class="no-wrap">관전</span> 취소
+        <span class="no-wrap">나가기</span>
       </button>
     </div>
     <div id="flex-container" class="hidden">

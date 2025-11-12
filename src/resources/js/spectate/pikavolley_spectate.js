@@ -9,14 +9,13 @@ import {
 import { Cloud, Wave } from '../offline_version_js/cloud_and_wave.js';
 import { PikaPhysics } from '../offline_version_js/physics.js';
 import { convert5bitNumberToUserInput } from '../utils/input_conversion.js';
-import { channel } from '../data_channel/data_channel.js';
 import {
   moveScrubberTo,
   showKeyboardInputs,
 } from './ui_spectate.js';
 import { setTickerMaxFPSAccordingToNormalFPS } from '../spectate/spectate_player.js';
-import { relayChannel } from './relay_channel.js';
-import { noticeEndOfSpectation } from './ui_spectate.js';
+import { noticeEndOfSpectation, hideWaitingPeerAssetsStartBox } from './ui_spectate.js';
+import { filterBadWords } from '../bad_words_censorship/chat_filter.js';
 
 /** @typedef GameState @type {function():void} */
 
@@ -158,10 +157,11 @@ export class PikachuVolleyballReplay extends PikachuVolleyball {
    */
   intro() {
     if (this.frameCounter === 0) {
+      hideWaitingPeerAssetsStartBox();
       this.selectedWithWho = 0;
       if (this.nicknames) {
-        displayNicknameFor(this.nicknames[0], this.isRoomCreatorPlayer2);
-        displayNicknameFor(this.nicknames[1], !this.isRoomCreatorPlayer2);
+        displayNicknameFor(filterBadWords(this.nicknames[0]), this.isRoomCreatorPlayer2);
+        displayNicknameFor(filterBadWords(this.nicknames[1]), !this.isRoomCreatorPlayer2);
       }
       if (this.partialPublicIPs) {
         displayPartialIPFor(
@@ -231,7 +231,7 @@ export class PikachuVolleyballReplay extends PikachuVolleyball {
     const usersInputNumber = this.inputs[this.replayFrameCounter];
     if (usersInputNumber == -1) {
       noticeEndOfSpectation();
-      return ;
+      return;
     }
     console.log(usersInputNumber);
     const player1Input = convert5bitNumberToUserInput(usersInputNumber >>> 5);
@@ -290,7 +290,7 @@ export class PikachuVolleyballReplay extends PikachuVolleyball {
     let chat = this.chats[this.chatCounter];
     while (chat && chat[0] === this.replayFrameCounter) {
       if (this.willDisplayChat) {
-        displayChatMessageAt(chat[2], chat[1]);
+        displayChatMessageAt(filterBadWords(chat[2]), chat[1]);
       }
       this.chatCounter++;
       chat = this.chats[this.chatCounter];

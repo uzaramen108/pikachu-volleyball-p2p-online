@@ -22,7 +22,6 @@ import {
   showTimeCurrent,
   enableReplayScrubberAndBtns,
   hideNoticeEndOfSpectation,
-  noticeFileOpenError,
   adjustFPSInputValue,
   moveScrubberTo,
 } from './ui_spectate.js'; 
@@ -80,6 +79,8 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
           this.pushInput(data.value);
         } else if (data.type === "live_options") {
           this.pushOptions(data.value);
+        } else if (data.type === "live_chat") {
+          this.pushChat(data.value);
         }
       } catch (e) {
         console.error("Failed to parse server message:", e);
@@ -87,10 +88,10 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
     };
     
     this.ws.onclose = () => { 
-      console.log("WebSocket 연결 종료");
+      console.log("WebSocket connection ended");
     };
     this.ws.onerror = (err) => { 
-      console.error("WebSocket 오류:", err);
+      console.error("WebSocket error:", err);
     };
   }
 
@@ -129,8 +130,6 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
         this.seekFrame(pack.inputs.length); 
         setMaxForScrubberRange(pack.inputs.length);
 
-        // [수정 1/2] Ticker를 시작하기 *전에* FPS를 동기화합니다.
-        // (seekFrame을 실행하면 pikaVolley.normalFPS가 최신값으로 업데이트됨)
         this.ticker.maxFPS = this.pikaVolley.normalFPS;
 
         this.ticker.start();
@@ -148,7 +147,6 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
     });
   }
   
-  // [신규] 3. 실시간 'input' 데이터 주입 함수
   pushInput(usersInputNumber) {
     if (!this.pikaVolley) { 
       return; 
@@ -157,16 +155,19 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
     setMaxForScrubberRange(this.pikaVolley.inputs.length);
   }
 
-  // [신규] 4. 실시간 'options' 데이터 주입 함수
   pushOptions(optionsData) {
-    if (!this.pikaVolley) { return; }
-    // pikavolley_spectate.js (게임 로직)의 options 배열에 추가
+    if (!this.pikaVolley) { 
+      return; 
+    }
     this.pikaVolley.options.push(optionsData); 
   }
 
-
-  // --- 'replay_player.js'의 나머지 함수들 (100% 동일) ---
-  // (일시정지 중 탐색을 위해 그대로 둠)
+  pushChat(chatData) {
+    if (!this.pikaVolley) { 
+      return; 
+    }
+    this.pikaVolley.chats.push(chatData); 
+  }
 
   /**
    * Seek the specific frame
@@ -181,7 +182,7 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
     if (this.pikaVolley) {
       this.pikaVolley.initializeForReplay();
     } else {
-      return; // 아직 pikaVolley가 생성되지 않음
+      return;
     }
 
     if (frameNumber > 0) {
@@ -256,18 +257,15 @@ class SpectatorPlayer { // ReplayPlayer -> SpectatorPlayer
 export const spectatorPlayer = new SpectatorPlayer();
 
 /**
- * Ticker의 maxFPS를 게임 로직의 normalFPS에 맞춰 조정합니다.
+ * Set ticker.maxFPS according to PikachuVolleyball object's normalFPS properly
  * @param {number} normalFPS
  */
 export function setTickerMaxFPSAccordingToNormalFPS(normalFPS) {
   if (spectatorPlayer.playBackSpeedFPS) {
-    // 사용자가 'fps'를 직접 지정한 경우, 그것을 우선
     spectatorPlayer.ticker.maxFPS = spectatorPlayer.playBackSpeedFPS;
   } else if (spectatorPlayer.playBackSpeedTimes) {
-    // 사용자가 '배속'을 지정한 경우, 배속을 우선
     spectatorPlayer.ticker.maxFPS = normalFPS * spectatorPlayer.playBackSpeedTimes;
   } else {
-    // 아무것도 지정하지 않은 경우, 1배속으로 설정
     spectatorPlayer.ticker.maxFPS = normalFPS;
   }
   adjustFPSInputValue();

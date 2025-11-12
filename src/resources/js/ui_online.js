@@ -24,14 +24,15 @@ import {
 } from "./quick_match/quick_match.js";
 import { enableChat } from "./chat_display.js";
 import { replaySaver } from "./replay/replay_saver.js";
+import { InputSaverForSpectator } from "./spectate/spectate_saver.js";
 import { showBlockThisPeerBtn } from "./block_other_players/ui.js";
 import "../style.css";
 import { MATCH_GROUP } from "./quick_match/match_group.js";
 import {
-  displayNicknameFor,
   displayPeerNicknameFor,
   displayMyAndPeerNicknameShownOrHidden,
 } from "./nickname_display.js";
+import { filterBadWords } from "./bad_words_censorship/chat_filter.js";
 
 /** @typedef {import('./pikavolley_online.js').PikachuVolleyballOnline} PikachuVolleyballOnline */
 /** @typedef {import('@pixi/ticker').Ticker} Ticker */
@@ -929,19 +930,15 @@ export function setUpUI() {
   
   if (spectatorBtn && spectatorBox) {
     spectatorBtn.addEventListener('click', () => {
-      // 방 목록 상자 보이기
       spectatorBox.classList.remove('hidden');
-      // 방 목록 불러오기
       fetchSpectatorRoomList();
     });
   }
 
-  // [신규] '관전 취소' 버튼 리스너 추가
   const cancelSpectateBtn = document.getElementById('cancel-spectate-btn');
   if (cancelSpectateBtn && spectatorBox) {
     cancelSpectateBtn.addEventListener('click', () => {
-      // 방 목록 상자 숨기기
-      spectatorBox.classList.add('hidden');
+      window.location.reload();
     });
   }
 }
@@ -956,6 +953,9 @@ export function setUpUIAfterLoadingGameAssets(pikaVolley, ticker) {
   applyOptions = (options) => {
     setSelectedOptionsBtn(options);
     replaySaver.recordOptions(options);
+    if (channel.amICreatedRoom) {
+      InputSaverForSpectator.recordOptions(options);
+    }
     if (options.graphic) {
       switch (options.graphic) {
         case "sharp":
@@ -1921,16 +1921,27 @@ function hideSubmenus() {
   }
 }
 
+let spectatorFetchInterval = null;
+
 /**
- * 서버에서 /rooms API를 호출하여 방 목록을 가져옵니다.
+ * Bring list of room by calling /rooms on server
  */
 async function fetchSpectatorRoomList() {
   const contentDiv = document.getElementById('spectator-room-list-content');
-  if (!contentDiv) return;
+  const loadingDiv = document.getElementById('Loading-room-list');
+  const noRoomDiv = document.getElementById('No-room-list');
+  const existingTable = document.getElementById('spectator-room-list-table');
 
-  contentDiv.innerHTML = "<p>방 목록을 불러오는 중...</p>";
+  if (!contentDiv || !loadingDiv || !noRoomDiv) {
+    return;
+  }
+  loadingDiv.classList.remove('hidden');
+  noRoomDiv.classList.add('hidden');
+  if (existingTable) {
+    existingTable.remove();
+  }
 
-  //try {
+  try {
     const response = await fetch(`${API_URL}/rooms`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -1938,25 +1949,28 @@ async function fetchSpectatorRoomList() {
     const data = await response.json();
 
     if (data.rooms && data.rooms.length > 0) {
-      // 방 목록 테이블 생성
+      loadingDiv.classList.add('hidden');
+      noRoomDiv.classList.add('hidden');
       buildRoomTable(contentDiv, data.rooms);
     } else {
-      // 활성화된 방이 없음
-      contentDiv.innerHTML = "<p>사람이 없습니다</p>";
+      loadingDiv.classList.add('hidden');
+      noRoomDiv.classList.remove('hidden');
+      console.log("There isn't available room. Searching again after 2 sec.");
+      spectatorFetchInterval = setTimeout(fetchSpectatorRoomList, 2000); // Searching again at 2 sec period
     }
-  //} catch (e) {
-    //console.error("방 목록을 불러오는 데 실패했습니다:", e);
-    //contentDiv.innerHTML = "<p>방 목록을 불러오는 데 실패했습니다. 다시 시도하세요.</p>";
-  //}
+  } catch (e) {
+    console.error("Failed for loading list or rooms:", e);
+    noRoomDiv.classList.add('hidden');
+    spectatorFetchInterval = setTimeout(fetchSpectatorRoomList, 2000); // Searching again at 2 sec period
+  }
 }
 
 /**
- * 서버에서 받은 방 목록 데이터로 HTML 테이블을 생성합니다.
- * @param {HTMLElement} contentDiv - 테이블을 삽입할 div
- * @param {Array<{id: string, nicknames: string[], ips: string[]}>} rooms - 방 정보 배열
+ * Construct html with data from server
+ * @param {HTMLElement} contentDiv
+ * @param {Array<{id: string, nicknames: string[], ips: string[]}>} rooms
  */
 function buildRoomTable(contentDiv, rooms) {
-  // 1. 테이블 기본 구조 생성
   const table = document.createElement('table');
   table.id = 'spectator-room-list-table';
   
@@ -1969,29 +1983,23 @@ function buildRoomTable(contentDiv, rooms) {
   `;
   
   const tbody = document.createElement('tbody');
-
-  // 2. 각 방을 테이블 행(row)으로 추가
+  
   rooms.forEach(room => {
     const tr = document.createElement('tr');
-    tr.className = 'spectator-room-row'; // 클릭 효과용 클래스
-    
-    // [핵심] 행(row)에 roomId 데이터를 저장
+    tr.className = 'spectator-room-row';
     tr.dataset.roomId = room.id; 
 
-    // 닉네임이 없으면 '대기 중'으로 표시
     const p1Nick = room.nicknames[0] || 'Player 1';
-    const p2Nick = room.nicknames[1] || '(대기 중...)';
+    const p2Nick = room.nicknames[1] || 'Player 2';
     const p1IP = room.ips[0] || '*.*';
     const p2IP = room.ips[1] || '*.*';
     
     tr.innerHTML = `
-      <td>${p1Nick}(${p1IP})</td>
-      <td>${p2Nick}(${p2IP})</td>
+      <td>${filterBadWords(p1Nick)}(${p1IP})</td>
+      <td>${filterBadWords(p2Nick)}(${p2IP})</td>
     `;
 
-    // 3. [핵심] 행(row)에 클릭 이벤트 추가
-    tr.addEventListener('click', () => {
-      // 클릭 시 해당 방의 ID를 가지고 관전 페이지로 이동
+    tr.addEventListener('click', () => { // Move to spectator/index.html
       window.location.href = `spectator/index.html?room=${room.id}`;
     });
     
@@ -2001,7 +2009,6 @@ function buildRoomTable(contentDiv, rooms) {
   table.appendChild(thead);
   table.appendChild(tbody);
   
-  // 4. 컨텐츠 Div에 테이블 삽입
-  contentDiv.innerHTML = ""; // "불러오는 중" 메시지 삭제
+  contentDiv.innerHTML = "";
   contentDiv.appendChild(table);
 }

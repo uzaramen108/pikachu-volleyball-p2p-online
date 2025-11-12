@@ -1,6 +1,3 @@
-import { saveAs } from 'file-saver';
-import { serialize } from '../utils/serialize.js';
-import { getHashCode } from '../utils/hash_code.js';
 import { convertUserInputTo5bitNumber } from '../utils/input_conversion.js';
 import { relayChannel } from './relay_channel.js';
 
@@ -69,19 +66,28 @@ class ReplaySaver {
 
   /**
    * Record game options
-   * @param {Options} options
+   * @param {Options} usersInputOption
    */
-  recordOptions(options) {
-    this.options.push([this.frameCounter, options]);
+  recordOptions(usersInputOption) {
+    //this.options.push([this.frameCounter, options]);
+    relayChannel.send({
+      type: "options",
+      options: usersInputOption
+    });
   }
 
   /**
    * Record a chat message
-   * @param {string} chatMessage
-   * @param {number} whichPlayerSide 1 or 2
+   * @param {string} Message
+   * @param {number} PlayerSide 1 or 2
    */
-  recordChats(chatMessage, whichPlayerSide) {
-    this.chats.push([this.frameCounter, whichPlayerSide, chatMessage]);
+  recordChats(Message, PlayerSide) {
+    //this.chats.push([this.frameCounter, whichPlayerSide, chatMessage]);
+    relayChannel.send({
+      type: "chat",
+      whichPlayerSide: PlayerSide,
+      chatMessage: Message
+    });
   }
 
   /**

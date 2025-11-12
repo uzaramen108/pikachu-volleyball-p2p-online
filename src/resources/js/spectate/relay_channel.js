@@ -9,9 +9,9 @@ class RelayChannel {
   }
 
   /**
-   * 릴레이 서버에 접속합니다.
-   * @param {string} roomId - 접속할 방 ID
-   * @param {() => void} onOpenCallback - 연결 성공 시 호출될 콜백
+   * Connect to relay server, https://github.com/uzaramen108/pikavolley-relay-server
+   * @param {string} roomId
+   * @param {() => void} onOpenCallback
    */
   connect(roomId, onOpenCallback) {
     if (this.ws) {
@@ -55,8 +55,8 @@ class RelayChannel {
   }
 
   /**
-   * 서버로 JSON 메시지를 전송합니다.
-   * @param {object} data - 전송할 객체
+   * Send JSON message to server
+   * @param {object} data
    */
   send(data) {
     if (this.ws && this.ws.readyState === 1 /* WebSocket.OPEN */) {
@@ -67,7 +67,7 @@ class RelayChannel {
   }
 
   /**
-   * 서버로부터 메시지를 수신할 콜백을 등록합니다.
+   * Register callback for receiving message from server.
    * @param {(data: object) => void} callback
    */
   onMessage(callback) {
@@ -75,5 +75,4 @@ class RelayChannel {
   }
 }
 
-// 싱글톤(Singleton) 인스턴스로 export
 export const relayChannel = new RelayChannel();

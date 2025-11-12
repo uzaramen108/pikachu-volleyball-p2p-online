@@ -719,14 +719,19 @@
     >
       <p class="thick">List of players at now</p>
       <div id="spectator-room-list-content">
-        <p>Loading list of rooms...</p>
+        <div id="Loading-room-list">
+          <p>Searching for the rooms...</p>
+        </div>
+        <div id="No-room-list" class="hidden">
+          <p>There are no rooms available here right now.</p>
+        </div>
       </div>
       <button
         type="button"
         id="cancel-spectate-btn"
         class="btn-in-box large"
       >
-        <span class="no-wrap">spectation</span> cancel
+        <span class="no-wrap">Exit</span>
       </button>
     </div>
     <div id="flex-container" class="hidden">

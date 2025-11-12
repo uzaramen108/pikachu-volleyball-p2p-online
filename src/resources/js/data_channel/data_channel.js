@@ -947,6 +947,7 @@ function dataChannelClosed() {
     type: "inputs",
     value: -1 // Value that norices the game is over
   });
+  relayChannel.ws.onclose
   channel.isOpen = false;
   cleanUpFirestoreRelevants(); // 플레이어와의 접속 종료 시 id 파기
   noticeDisconnected();

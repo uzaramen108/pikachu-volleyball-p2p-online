@@ -2,8 +2,6 @@
 import { PikachuVolleyball } from "./offline_version_js/pikavolley.js";
 import { bufferLength, myKeyboard, OnlineKeyboard } from "./keyboard_online.js";
 import { SYNC_DIVISOR, channel } from "./data_channel/data_channel.js";
-import { relayChannel } from './spectate/relay_channel.js';
-import { convertUserInputTo5bitNumber } from './utils/input_conversion.js';
 import { mod } from "./utils/mod.js";
 import { askOneMoreGame } from "./ui_online.js";
 import {
@@ -163,7 +161,7 @@ export class PikachuVolleyballOnline extends PikachuVolleyball {
       player2Input.yDirection = this.keyboardArray[1].yDirection;
       player2Input.powerHit = this.keyboardArray[1].powerHit;
       replaySaver.recordInputs(player1Input, player2Input);
-      if (channel.amICreatedRoom) {
+      if (channel.amICreatedRoom) { // 일단 작동하긴 하는데 더 나은 코드가 있을 듯 합니다...
         if (this.slowMotionFramesLeft > 0) {
           if (this.slowMotionNumOfSkippedFrames % Math.round(this.normalFPS / this.slowMotionFPS) !== 0) {
             InputSaverForSpectator.recordInputs(player1Input, player2Input);
